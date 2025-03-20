@@ -1,6 +1,0 @@
-.full-page {
-    min-height: 80vh; /* Asegura que ocupe toda la altura */
-    display: flex;
-
-    align-items: center; /* Centrado vertical */
-}
