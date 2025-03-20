@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+    <style>
+        .fondo-delineado {
+            margin: 0; /* Elimina márgenes predeterminados */
+            height: 100vh;
+      background: linear-gradient(to bottom, #f4a261, #17283b); /* Degradado de izquierda a derecha */
+     
+     
+    }
+    </style>
+<head>
+  
+    <meta charset="UTF-8">
+    <link src="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../bootstrap/css/registro.css">
+    <title>Registro</title>
+</head>
+
+<body  class="fondo-delineado">
+
+    <div class="container full-page d-flex justify-content-center align-items-cente">
+        <div class="col-md-8 col-lg-6" 
+        style="background-color: #f8f9fa; color: white; border-radius:5px; padding: 20px;  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); color:#17283b;">
+        <h5 style="text-align:center;"><b>REGISTO DOCTOR</b></h5>
+            <form action="../controller/registrarUsuario.php" method="POST" >
+                
+                <div class="mb-3">
+                    <label for="nombre" class="form-label"><b>Nombre</b></label>
+                    <input type="text" class="form-control" id="nombre" name="nombre"
+                        placeholder="Escriba su Nombre...">
+
+                </div>
+
+                <div class="mb-3">
+                    <label for="cedula" class="form-label"><b>Cedula</b></label>
+                    <input type="text" class="form-control" id="cedula" name="cedula"
+                        placeholder="Escriba su cedula..">
+                </div>
+
+                <div class="mb-3">
+                    <label for="clave" class="form-label"><b>Clave</b></label>
+                    <input type="password" class="form-control" id="clave" name="clave"
+                        placeholder="Escriba su clave..">
+                </div>
+                <div style="text-align: center;">
+                <button type="submit" class="btn btn-primary">Registrate</button>
+                </div>
+                <br>
+                <div  style="text-align: center;">
+                <p>¿Ya estas Registrado?<a href="login.html"> <b>Iniciar Sesión</b></a></p> 
+                </div>
+            </form>
+        </div>
+
+    </div>
+
+
+</body>
+<script src="../bootstrap/js/bootstrap.min.js"></script>
+
+</html>
