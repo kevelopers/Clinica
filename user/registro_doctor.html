@@ -70,11 +70,6 @@
                             placeholder="Escriba su cedula.." required>
                     </div>
                     <div class="mb-3">
-                        <label for="nro_carnet" class="form-label"><b>Nro de Carnet</b></label>
-                        <input type="number" class="form-control" id="nro_carnet" name="nro_carnet"
-                            placeholder="Escriba su Numero De Carnet.." required>
-                    </div>
-                    <div class="mb-3">
                         <label for="especialidad" class="form-label"><b>Especialidad</b></label>
                         <select class="form-select" id="especialidad" name="especialidad" multiple required></select>
                     </div>
@@ -88,8 +83,9 @@
                         <input type="password" class="form-control" id="confirmar_clave" name="confirmar_clave"
                             placeholder="Escriba su clave.." required>
                     </div>
+                    <input value="Paciente" hidden> 
                     <div style="text-align: center;">
-                        <button type="button" class="btn btn-primary" id="btnRegistrar">Registrate</button>
+                        <button type="submit" class="btn btn-primary" id="btnRegistrar">Registrate</button>
                         <div style="color: red;" id="mensajeError" class="mensajeError"></div>
                     </div>
                  
@@ -184,9 +180,53 @@
         } else {
             mensajeDiv.textContent = ''; // Limpiar el mensaje de error si las contraseñas coinciden
             // Aquí puedes agregar el código para enviar el formulario o realizar otras acciones
-            console.log("Contraseñas coinciden");
+          //  console.log("Contraseñas coinciden");
         }
     });
+
+
+     // Enviar el formulario como JSON al endpoint /crear_cita
+     document.getElementById('btnRegistrar').addEventListener('click', async () => {
+            const nombre = document.getElementById('nombre').value;
+            const nacimiento = document.getElementById('nacimiento').value;
+            const sexo = document.getElementById('sexo').value;
+            const cedula = document.getElementById('cedula').value;
+            const especialidad = document.getElementById('especialidad').value;
+            const clave = document.getElementById('clave').value;
+            const confirmar_clave = document.getElementById('confirmar_clave').value;
+
+            const data = {
+                nombre: nombre,
+                nacimiento: nacimiento,
+                sexo: sexo,
+                cedula: cedula,
+                especialidad: especialidad,
+                clave: clave,
+                confirmar_clave: confirmar_clave
+
+            };
+
+            try {
+                const response = await fetch('http://127.0.0.1:5000/registro_doctor', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(result.message || 'Registro Doctor');
+                } else {
+                    const error = await response.json();
+                    alert(error.error || 'Error al registrar Doctor');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Error al conectar con el servidor');
+            }
+        });
 </script>
 
 </html>
