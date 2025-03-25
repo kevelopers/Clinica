@@ -162,7 +162,7 @@ def crear_cita_route():
             return {"error": "El doctor no existe"}, 404
 
         # Validar que el paciente exista
-        patient = Paciente.find_by_id(patient_id)
+        patient = Paciente.find_by_identificacion_numero(patient_id)
         if not patient:
             return {"error": "El paciente no existe"}, 404
 
