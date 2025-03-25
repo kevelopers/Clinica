@@ -29,7 +29,7 @@ def registro():
 def dashboard():
     return render_template('user/registro_doctor.html')
 
-@app.route('/tipo/usuario')
+@app.route('/tipo_usuario')
 def perfil():
     return render_template('user/tipo_usuario.html')
 
