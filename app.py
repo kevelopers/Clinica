@@ -18,12 +18,8 @@ def index():
     # Mostrar un menú de opciones para el usuario
     return render_template("user/login.html")
 
-<<<<<<< HEAD
-@app.route('/crear_citas', methods=['GET'])
-=======
 
 @app.route("/crear_citas", methods=["GET"])
->>>>>>> c0760b661e8af9de87119766d8402bfa50bdc84e
 def crear_citas():
     return render_template("user/crear_citas.html")
 
