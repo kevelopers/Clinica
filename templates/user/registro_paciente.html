@@ -16,6 +16,10 @@
       padding: 20px;
       position: relative;
     }
+    .mensajeRegistro {
+    color: green;
+    display: block; /* Asegúrate de que esté visible */
+}
   </style>
 
   <head>
@@ -225,6 +229,7 @@
                 id="mensajeError"
                 class="mensajeError"
               ></div>
+              <div style="color: green;" id="mensajeRegistro" class="mensajeRegistro"></div>
             </div>
             <br />
             <div style="text-align: center">
@@ -269,6 +274,7 @@
             document.getElementById("sexo_hijo")?.value || "N/A"; // Sexo del hijo
           const patologia =
             document.getElementById("patologia")?.value || "Ninguna"; // Campo de patología
+          
 
           if (clave !== confirmar_clave) {
             document.getElementById("mensajeError").textContent =
@@ -318,11 +324,12 @@
               },
               body: JSON.stringify(pacienteData),
             });
-
+            let mensajeRegistro = document.getElementById('mensajeRegistro');
             if (response.ok) {
               const data = await response.json();
-              if (data.success) {
-                alert("Paciente registrado exitosamente.");
+              if (data.message) {
+        
+                mostrarMensaje(data.message);
                 window.location.replace("/");
               } else {
                 alert(data.message || "Error al registrar el paciente.");
@@ -335,6 +342,12 @@
             alert("Error al conectar con el servidor.");
           }
         });
+
+        function mostrarMensaje(mensaje) {
+    const mensajeRegistro = document.getElementById('mensajeRegistro');
+    mensajeRegistro.textContent = mensaje;
+    mensajeRegistro.style.color = 'green'; // Opcional: Cambia el color del texto
+}
     </script>
   </body>
 </html>

@@ -90,6 +90,8 @@
                     <div style="text-align: center;">
                         <button type="submit" class="btn btn-primary" id="btnRegistrar">Registrate</button>
                         <div style="color: red;" id="mensajeError" class="mensajeError"></div>
+                        <div style="color: green;" id="mensajeRegistro" class="mensajeRegistro"></div>
+                        
                     </div>
                  
                     <br>
@@ -197,6 +199,7 @@
             const especialidad = document.getElementById('especialidad').value;
             const clave = document.getElementById('clave').value;
             const confirmar_clave = document.getElementById('confirmar_clave').value;
+            let mensajeRegistro = document.getElementById('mensajeRegistro');
 
             const data = {
                 nombre: nombre,
@@ -221,6 +224,7 @@
                 if (response.ok) {
                     const result = await response.json();
                     alert(result.message || 'Registro Doctor');
+                    mensajeRegistro.textContent = 'Registro Exitoso.';
                 } else {
                     const error = await response.json();
                     alert(error.error || 'Error al registrar Doctor');
