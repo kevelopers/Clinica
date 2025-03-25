@@ -94,7 +94,7 @@ def doctor():
 def paciente():
     try:
         data = request.get_json()
-        nombre = data["nombre"]
+        name = data["name"]
         identificacion_tipo = data["identificacion_tipo"]
         identificacion_numero = data["identificacion_numero"]
         telefono = data["telefono"]
@@ -106,14 +106,19 @@ def paciente():
         fecha_nacimiento = data["fecha_nacimiento"]
         sexo = data["sexo"]
         patologia = data["patologia"]
+        usuario = data["usuario"]
         clave = data["clave"]
         confirmar_clave = data["confirmar_clave"]
 
         if clave != confirmar_clave:
             return {"error": "Las claves no coinciden"}, 400
+        user = User(usuario, clave, "paciente")
+        user.save()
+        id = User.find_id_by_username(usuario)
 
         paciente = Paciente(
-            name=nombre,
+            name=name,
+            user_id=id,
             identificacion_tipo=identificacion_tipo,
             identificacion_numero=identificacion_numero,
             telefono=telefono,
@@ -125,7 +130,6 @@ def paciente():
             fecha_nacimiento=fecha_nacimiento,
             sexo=sexo,
             patologia=patologia,
-            clave=clave,
         )
         paciente.save()
         return {"message": "Paciente creado exitosamente"}, 201
