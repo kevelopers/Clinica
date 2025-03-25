@@ -185,6 +185,7 @@ class Paciente:  # Ensure Paciente is imported and used here
                 ),
             )
             conn.commit()
+
     def find_by_id(patient_id):
         with sqlite3.connect("database.db") as conn:
             cursor = conn.cursor()
@@ -219,6 +220,15 @@ class User:
             row = cursor.fetchone()
             if row:
                 return User(username=row[1], password=row[2], role=row[3])
+            return None
+
+    def find_id_by_username(username):
+        with sqlite3.connect("database.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT id FROM users WHERE username = ?", (username,))
+            row = cursor.fetchone()
+            if row:
+                return row[0]
             return None
 
     def check_password(self, password):

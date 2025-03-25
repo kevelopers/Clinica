@@ -90,6 +90,53 @@ def doctor():
         return {"error": str(e)}, 500
 
 
+@app.route("/registro_paciente", methods=["POST"])
+def paciente():
+    try:
+        data = request.get_json()
+        name = data["name"]
+        identificacion_tipo = data["identificacion_tipo"]
+        identificacion_numero = data["identificacion_numero"]
+        telefono = data["telefono"]
+        direccion = data["direccion"]
+        descendencia = data["descendencia"]
+        nombre_hijo = data["nombre_hijo"]
+        fecha_nacimiento_hijo = data["fecha_nacimiento_hijo"]
+        sexo_hijo = data["sexo_hijo"]
+        fecha_nacimiento = data["fecha_nacimiento"]
+        sexo = data["sexo"]
+        patologia = data["patologia"]
+        usuario = data["usuario"]
+        clave = data["clave"]
+        confirmar_clave = data["confirmar_clave"]
+
+        if clave != confirmar_clave:
+            return {"error": "Las claves no coinciden"}, 400
+        user = User(usuario, clave, "paciente")
+        user.save()
+        id = User.find_id_by_username(usuario)
+
+        paciente = Paciente(
+            name=name,
+            user_id=id,
+            identificacion_tipo=identificacion_tipo,
+            identificacion_numero=identificacion_numero,
+            telefono=telefono,
+            direccion=direccion,
+            descendencia=descendencia,
+            nombre_hijo=nombre_hijo,
+            fecha_nacimiento_hijo=fecha_nacimiento_hijo,
+            sexo_hijo=sexo_hijo,
+            fecha_nacimiento=fecha_nacimiento,
+            sexo=sexo,
+            patologia=patologia,
+        )
+        paciente.save()
+        return {"message": "Paciente creado exitosamente"}, 201
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+
 @app.route("/menu")
 def menu_lateral():
     return render_template("user/menulateral.html")
