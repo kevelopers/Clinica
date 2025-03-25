@@ -112,7 +112,7 @@ def paciente():
 
         if clave != confirmar_clave:
             return {"error": "Las claves no coinciden"}, 400
-        user = User(usuario, clave, "paciente")
+        user = User(username=usuario, password=clave, role="paciente")
         user.save()
         id = User.find_id_by_username(usuario)
 

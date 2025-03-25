@@ -206,9 +206,9 @@ class User:
             cursor.execute(
                 """
                 INSERT INTO users (username, password, role)
-                VALUES (?, ?)
+                VALUES (?, ?, ?)
             """,
-                (self.username, hash_password),
+                (self.username, hash_password, self.role),
             )
             conn.commit()
 
