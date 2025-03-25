@@ -3,6 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <!-- jsPDF y html2canvas -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}"
@@ -30,6 +33,26 @@
         flex-grow: 1;
         padding: 20px;
       }
+      .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 5px;
+            width: 300px;
+        }
+        .modal.show {
+            display: flex;
+        }
     </style>
   </head>
 
@@ -51,22 +74,58 @@
               box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             "
           >
-            <table class="table table-striped" border="1">
-              <thead>
+          <table class="table table-striped" border="1">
+            <thead>
                 <tr>
-                  <th>Fecha y Hora</th>
-                  <th>Paciente</th>
-                  <th>Motivo</th>
+                    <th>Fecha y Hora</th>
+                    <th>Paciente</th>
+                    <th>Motivo</th>
                 </tr>
-              </thead>
-              <tbody id="citasBody">
-                <!-- Las filas se llenarán dinámicamente -->
-              </tbody>
-            </table>
+            </thead>
+            <tbody id="citasBody">
+                <tr>
+                    <td>2025-03-25 10:00 AM</td>
+                    <td><a href="#" class="open-modal" data-bs-toggle="modal" data-bs-target="#pacienteModal" data-nombre="Juan Pérez" data-historial="Consulta general, Control de presión, Revisión de resultados">Juan Pérez</a></td>
+                    <td>Consulta general</td>
+                </tr>
+                <tr>
+                    <td>2025-03-26 02:30 PM</td>
+                    <td><a href="#" class="open-modal" data-bs-toggle="modal" data-bs-target="#pacienteModal" data-nombre="María Gómez" data-historial="Control de presión, Revisión de resultados">María Gómez</a></td>
+                    <td>Control de presión</td>
+                </tr>
+                <tr>
+                    <td>2025-03-27 09:15 AM</td>
+                    <td><a href="#" class="open-modal" data-bs-toggle="modal" data-bs-target="#pacienteModal" data-nombre="Carlos Ruiz" data-historial="Revisión de resultados">Carlos Ruiz</a></td>
+                    <td>Revisión de resultados</td>
+                </tr>
+            </tbody>
+        </table>
+    
+      <!-- Modal -->
+    <div class="modal fade" id="pacienteModal" tabindex="-1" aria-labelledby="pacienteModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+          <div class="modal-content">
+              <div class="modal-header">
+                  <h5 class="modal-title" id="pacienteModalLabel">Detalles del Paciente</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body">
+                  <p><strong>Nombre:</strong> <span id="modalNombre"></span></p>
+                  <p><strong>Historial:</strong></p>
+                  <ul id="modalHistorial"></ul>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                  <button type="button" class="btn btn-primary" id="exportarPDF">Exportar a PDF</button>
+              </div>
+          </div>
+      </div>
+  </div>
           </div>
         </div>
       </div>
     </div>
+
     <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
     <script>
       // Función para cargar las citas desde el endpoint
@@ -78,7 +137,7 @@
             const citasBody = document.getElementById("citasBody");
 
             // Limpiar el contenido existente
-            citasBody.innerHTML = "";
+          //  citasBody.innerHTML = "";
 
             // Agregar las filas dinámicamente
             data.citas.forEach((cita) => {
@@ -108,6 +167,65 @@
 
       // Llamar a la función para cargar las citas al cargar la página
       cargarCitas();
+
+
+
+        // Seleccionar elementos con la clase 'open-modal'
+        const { jsPDF } = window.jspdf;
+
+// Seleccionar elementos con la clase 'open-modal'
+document.querySelectorAll('.open-modal').forEach(item => {
+    item.addEventListener('click', event => {
+        // Obtener datos del paciente
+        const nombre = event.target.getAttribute('data-nombre');
+        const historial = event.target.getAttribute('data-historial').split(', ');
+
+        // Insertar datos en el modal
+        document.getElementById('modalNombre').textContent = nombre;
+        const modalHistorial = document.getElementById('modalHistorial');
+        modalHistorial.innerHTML = ''; // Limpiar contenido previo
+
+        historial.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = item;
+            modalHistorial.appendChild(li);
+        });
+    });
+});
+
+// Exportar a PDF
+document.getElementById('exportarPDF').addEventListener('click', () => {
+    const pdf = new jsPDF();
+    const nombre = document.getElementById('modalNombre').textContent;
+    const historial = document.getElementById('modalHistorial').innerText;
+
+    // Configuración inicial
+    pdf.setFont('helvetica', 'bold');
+    pdf.setFontSize(18);
+    pdf.text(`Reporte Médico de ${nombre}`, 105, 15, { align: 'center' });
+
+    // Dibujar recuadro para el nombre
+    pdf.setDrawColor(0);
+    pdf.setFillColor(240, 240, 240);
+    pdf.rect(10, 20, 190, 10, 'F');
+    pdf.setFontSize(12);
+    pdf.text(`Paciente: ${nombre}`, 15, 26);
+
+    // Dibujar recuadro para el historial
+    pdf.rect(10, 35, 190, pdf.internal.pageSize.height - 45, 'S');
+    pdf.setFont('helvetica', 'bold');
+    pdf.text("Historial Médico:", 15, 45);
+
+    // Formatear el historial
+    pdf.setFont('helvetica', 'normal');
+    pdf.setFontSize(10);
+    const splitHistorial = pdf.splitTextToSize(historial, 180);
+    pdf.text(splitHistorial, 15, 55);
+
+    // Guardar el PDF
+    pdf.save(`Reporte_${nombre}.pdf`);
+});
+
     </script>
   </body>
 </html>
