@@ -18,12 +18,12 @@ def index():
     # Mostrar un menú de opciones para el usuario
     return render_template("user/login.html")
 
-<<<<<<< HEAD
+
 @app.route('/crear_citas', methods=['GET'])
-=======
+
 
 @app.route("/crear_citas", methods=["GET"])
->>>>>>> c0760b661e8af9de87119766d8402bfa50bdc84e
+
 def crear_citas():
     return render_template("user/crear_citas.html")
 
@@ -40,7 +40,7 @@ def dashboard():
 
 @app.route("/tipo_usuario")
 def perfil():
-<<<<<<< HEAD
+
     return render_template('user/tipo_usuario.html')
 
 @app.route('/menulateral', methods=['GET'])
@@ -84,9 +84,8 @@ def doctor():
 
 if __name__ == '__main__':
     app.run(debug=True)
-=======
-    return render_template("user/tipo_usuario.html")
->>>>>>> c0760b661e8af9de87119766d8402bfa50bdc84e
+    # Removed invalid return statement outside of a function
+
 
 
 @app.route("/menu")
