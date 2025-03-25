@@ -8,6 +8,8 @@ import random
 app = Flask(__name__)
 CORS(app)
 
+
+
 initialize_database()
 
 def generar_nro_carnet():
