@@ -61,6 +61,12 @@ def generar_nro_carnet():
                 return nro_carnet
 
 
+@app.route("/doctores", methods=["GET"])
+def doctores():
+    doctores = Doctor.list()
+    return {"doctores": doctores}, 200
+
+
 @app.route("/registro_doctor", methods=["POST"])
 def doctor():
     try:
@@ -103,6 +109,16 @@ def crear_cita_route():
         fecha = data["fecha"]
         motivo = data["motivo"]
 
+        # Validar que el doctor exista
+        doctor = Doctor.find_by_id(doctor_id)
+        if not doctor:
+            return {"error": "El doctor no existe"}, 404
+
+        # Validar que el paciente exista
+        patient = Paciente.find_by_id(patient_id)
+        if not patient:
+            return {"error": "El paciente no existe"}, 404
+
         cita = Cita(doctor_id, patient_id, fecha, motivo)
         cita.save()
 
@@ -122,7 +138,9 @@ def login():
         user = User.find_by_username(username)
         if user is None or not user.check_password(password):
             return {"error": "Usuario o clave incorrecta"}, 401
-        return {"message": "Inicio de sesión exitoso"}, 200
+        return {"message": "Inicio de sesión exitoso", "role": user.role}, 200
+    except KeyError as e:
+        return {"error": f"Falta el campo requerido: {str(e)}"}, 400
     except Exception as e:
         return {"error": str(e)}, 500
 
@@ -130,6 +148,7 @@ def login():
 @app.route("/citas/listar", methods=["GET"])
 def list_citas():
     try:
+        print("Listando citas")
         citas = Cita.list()  # Ensure Cita is imported and used here
         return {"citas": citas}, 200
     except Exception as e:
@@ -146,7 +165,6 @@ def generar_nro_carnet():
             )
             if not cursor.fetchone():
                 return nro_carnet
-
 
 
 if __name__ == "__main__":
