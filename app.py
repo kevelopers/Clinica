@@ -48,6 +48,33 @@ def historial():
 def citas():
     return render_template("user/ver_citas.html")
 
+@app.route("/crear_cita", methods=["POST"])
+def crear_cita_route():
+    try:
+        data = request.get_json()
+        doctor_id = data["doctor_id"]
+        patient_id = data["patient_id"]
+        fecha = data["fecha"]
+        motivo = data["motivo"]
+
+        cita = Cita(doctor_id, patient_id, fecha, motivo)
+        cita.save()
+
+        return {"message": "Cita creada exitosamente"}, 201
+    except KeyError as e:
+        return {"error": f"Falta el campo requerido: {str(e)}"}, 400
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+
+@app.route("/citas/listar", methods=["GET"])
+def citas():
+    try:
+        citas = Cita.list()  # Ensure Cita is imported and used here
+        return {"citas": citas}, 200
+    except Exception as e:
+        return {"error": str(e)}, 500
+
 
 def generar_nro_carnet():
     with sqlite3.connect("database.db") as conn:
@@ -87,30 +114,3 @@ def doctor():
 if __name__ == "__main__":
     app.run(debug=True)
 
-
-@app.route("/crear_cita", methods=["POST"])
-def crear_cita_route():
-    try:
-        data = request.get_json()
-        doctor_id = data["doctor_id"]
-        patient_id = data["patient_id"]
-        fecha = data["fecha"]
-        motivo = data["motivo"]
-
-        cita = Cita(doctor_id, patient_id, fecha, motivo)
-        cita.save()
-
-        return {"message": "Cita creada exitosamente"}, 201
-    except KeyError as e:
-        return {"error": f"Falta el campo requerido: {str(e)}"}, 400
-    except Exception as e:
-        return {"error": str(e)}, 500
-
-
-@app.route("/citas", methods=["GET"])
-def citas():
-    try:
-        citas = Cita.list()  # Ensure Cita is imported and used here
-        return {"citas": citas}, 200
-    except Exception as e:
-        return {"error": str(e)}, 500
