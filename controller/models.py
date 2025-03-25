@@ -174,7 +174,7 @@ class User:
             cursor = conn.cursor()
             cursor.execute(
                 """
-                INSERT INTO usuarios (username, password, role)
+                INSERT INTO users (username, password, role)
                 VALUES (?, ?)
             """,
                 (self.username, self.password),
@@ -185,12 +185,12 @@ class User:
     def find_by_username(username):
         with sqlite3.connect("database.db") as conn:
             cursor = conn.cursor()
-            cursor.execute("SELECT * FROM usuarios WHERE username = ?", (username,))
+            cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
             row = cursor.fetchone()
             if row:
+                print(row[2])
                 return User(username=row[1], password=row[2], role=row[3])
             return None
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
-

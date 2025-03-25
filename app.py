@@ -102,6 +102,11 @@ def menu_lateral():
     return render_template("user/menulateral.html")
 
 
+@app.route("/contacto")
+def contacto():
+    return render_template("user/contacto.html")
+
+
 @app.route("/citas")
 def citas():
     return render_template("user/ver_citas.html")

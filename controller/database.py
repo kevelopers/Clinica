@@ -148,9 +148,9 @@ def initialize_database():
         hashed_password = generate_password_hash(plain_password)
         cursor.execute(
             """
-        INSERT INTO usuarios (username, password, role)
+        INSERT INTO users (username, password, role)
         SELECT ?, ?, ?
-        WHERE NOT EXISTS (SELECT 1 FROM usuarios WHERE username = ?);
+        WHERE NOT EXISTS (SELECT 1 FROM users WHERE username = ?);
         """,
             (username, hashed_password, role, username),
         )
