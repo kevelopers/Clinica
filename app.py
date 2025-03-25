@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template
 from flask_cors import CORS
 from controller.database import initialize_database
-from controller.models import Doctor, Cita  # Added Cita import
+from controller.models import *  # agregar todos los modelos
 import sqlite3
 import random
 
@@ -19,7 +19,12 @@ def index():
     return render_template("user/login.html")
 
 
+
 @app.route('/crear_citas', methods=['GET'])
+
+
+@app.route("/crear_citas", methods=["GET"])
+
 
 
 @app.route("/crear_citas", methods=["GET"])
@@ -40,6 +45,7 @@ def dashboard():
 
 @app.route("/tipo_usuario")
 def perfil():
+
 
     return render_template('user/tipo_usuario.html')
 
@@ -85,6 +91,9 @@ def doctor():
 if __name__ == '__main__':
     app.run(debug=True)
     # Removed invalid return statement outside of a function
+    
+    
+  
 
 
 
@@ -113,6 +122,20 @@ def crear_cita_route():
         return {"message": "Cita creada exitosamente"}, 201
     except KeyError as e:
         return {"error": f"Falta el campo requerido: {str(e)}"}, 400
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    try:
+        data = request.get_json()
+        username = data["username"]
+        password = data["password"]
+        user = User.find_by_username(username)
+        if user is None or not user.check_password(password):
+            return {"error": "Usuario o clave incorrecta"}, 401
+        return {"message": "Inicio de sesión exitoso"}, 200
     except Exception as e:
         return {"error": str(e)}, 500
 
