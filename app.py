@@ -17,7 +17,7 @@ def index():
     # Mostrar un menú de opciones para el usuario
     return render_template('user/login.html')
 
-@app.route('/crear_citas')
+@app.route('/crear_citas', methods=['GET'])
 def crear_citas():
     return render_template('user/crear_citas.html')
 
@@ -33,9 +33,13 @@ def dashboard():
 def perfil():
     return render_template('user/tipo_usuario.html')
 
-@app.route('/historial', methods=['GET'])
-def historial():
-    return render_template('user/historial.html')
+@app.route('/menulateral', methods=['GET'])
+def menulateral():
+    return render_template('user/menulateral.html')
+
+@app.route('/contacto', methods=['GET'])
+def contacto():
+    return render_template('user/contacto.html')
 
 def generar_nro_carnet():
     with sqlite3.connect('database.db') as conn:

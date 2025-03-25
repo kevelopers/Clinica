@@ -119,31 +119,26 @@
         .white-icon {
             filter: invert(100%);
         }
-      
+        .sidebar a:hover{
+            color: rgb(8, 13, 13);
+        }
     </style>
 </head>
 <body>
     <div id="sidebar" class="sidebar">
         <div class="centered-bars" id="toggleBtn">
-            <img src="../img/list-solid.svg" width="20px" alt="Bars Icon" class="white-icon">
+            <img src="{{ url_for('static', filename='img/list-solid.svg') }}" width="20px" alt="Bars Icon" class="white-icon">
         </div>
         <div class="sidebar-header">
             Menú
         </div>
         <div class="sidebar-content">
-            <a href="crear_citas.html"><i class="fas fa-home"></i> <span>Crear Citas</span></a>
-           
-            <a href="#"><i class="fas fa-user"></i> <span>Horarios</span></a>
-            
-      
-         
-            <a href="#"><i class="fas fa-envelope"></i> <span>Contacto</span></a>
-      
-            <a href="#"><i class="fas fa-sign-out-alt"></i> <span>Salir</span></a>
+            <a href="{{ url_for('crear_citas') }}" target="_top"><i class="fas fa-home"></i> <span>Crear Citas</span></a>
+            <a href="{{ url_for('contacto') }}" target="_top"><i class="fas fa-envelope"></i> <span>Contacto</span></a>
+            <a href="#" target="_top"><i class="fas fa-user"></i> <span>Horarios</span></a>
+            <a href="#" target="_top"><i class="fas fa-sign-out-alt"></i> <span>Salir</span></a>
         </div>
     </div>
-
-
 
     <script>
         const sidebar = document.getElementById('sidebar');

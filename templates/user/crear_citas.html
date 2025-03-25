@@ -4,8 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../bootstrap/css/registro.css">
+    <!-- Referencia a Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" />
+    <!-- Referencia a tu archivo CSS personalizado -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/registro.css') }}" />
     <title>Crear Citas</title>
     <style>
         .fondo-delineado {
@@ -35,7 +37,7 @@
 </head>
 
 <body class="fondo-delineado">
-    <iframe id="sidebarFrame" src="./menulateral.html"></iframe>
+    <iframe id="sidebarFrame" src="{{ url_for('menulateral') }}"></iframe>
     <div class="main-content">
 
         <div class="container">
@@ -155,5 +157,6 @@
         });
     </script>
 </body>
-
+  <!-- Referencia a Bootstrap JS -->
+  <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
 </html>
