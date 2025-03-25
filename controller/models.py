@@ -192,6 +192,15 @@ class Paciente:  # Ensure Paciente is imported and used here
             cursor.execute("SELECT * FROM patients WHERE id = ?", (patient_id,))
             return cursor.fetchone()
 
+    def find_by_identificacion_numero(identificacion_numero):
+        with sqlite3.connect("database.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT * FROM patients WHERE identificacion_numero = ?",
+                (identificacion_numero,),
+            )
+            return cursor.fetchone()
+
 
 class User:
     def __init__(self, username, password, role):
