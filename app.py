@@ -19,65 +19,60 @@ def index():
     return render_template("user/login.html")
 
 
-
-@app.route('/crear_citas', methods=['GET'])
-
-
 @app.route("/crear_citas", methods=["GET"])
-
-
-
-@app.route("/crear_citas", methods=["GET"])
-
 def crear_citas():
     return render_template("user/crear_citas.html")
 
 
 @app.route("/registro/paciente")
-def registro():
+def registro_paciente():
     return render_template("user/registro_paciente.html")
 
 
 @app.route("/registro/doctor")
-def dashboard():
+def registro_doctor():
     return render_template("user/registro_doctor.html")
 
 
 @app.route("/tipo_usuario")
 def perfil():
+    return render_template("user/tipo_usuario.html")
 
 
-    return render_template('user/tipo_usuario.html')
-
-@app.route('/menulateral', methods=['GET'])
+@app.route("/menulateral", methods=["GET"])
 def menulateral():
-    return render_template('user/menulateral.html')
+    return render_template("user/menulateral.html")
 
-@app.route('/contacto', methods=['GET'])
+
+@app.route("/contacto", methods=["GET"])
 def contacto():
-    return render_template('user/contacto.html')
+    return render_template("user/contacto.html")
+
 
 def generar_nro_carnet():
-    with sqlite3.connect('database.db') as conn:
+    with sqlite3.connect("database.db") as conn:
         cursor = conn.cursor()
         while True:
             nro_carnet = str(random.randint(100000, 999999))
-            cursor.execute('SELECT nro_carnet FROM doctores WHERE nro_carnet = ?', (nro_carnet,))
+            cursor.execute(
+                "SELECT nro_carnet FROM doctores WHERE nro_carnet = ?", (nro_carnet,)
+            )
             if not cursor.fetchone():
                 return nro_carnet
 
-@app.route('/registro_doctor', methods=['POST'])
+
+@app.route("/registro_doctor", methods=["POST"])
 def doctor():
     try:
         data = request.get_json()
-        nombre = data['nombre']
-        nacimiento = data['nacimiento']
-        sexo = data['sexo']
-        cedula = data['cedula']
+        nombre = data["nombre"]
+        nacimiento = data["nacimiento"]
+        sexo = data["sexo"]
+        cedula = data["cedula"]
         carnet = generar_nro_carnet()
-        especialidades = [data['especialidad']]
-        clave = data['clave']
-        confirmar_clave = data['confirmar_clave']
+        especialidades = [data["especialidad"]]
+        clave = data["clave"]
+        confirmar_clave = data["confirmar_clave"]
 
         if clave != confirmar_clave:
             return {"error": "Las claves no coinciden"}, 400
@@ -88,26 +83,13 @@ def doctor():
     except Exception as e:
         return {"error": str(e)}, 500
 
-if __name__ == '__main__':
-    app.run(debug=True)
-    # Removed invalid return statement outside of a function
-    
-    
-  
-
-
 
 @app.route("/menu")
 def menu_lateral():
     return render_template("user/menulateral.html")
 
 
-@app.route("/contacto")
-def contacto():
-    return render_template("user/contacto.html")
-
-
-@app.route("/citas")
+@app.route("/citas", methods=["GET"])
 def citas():
     return render_template("user/ver_citas.html")
 
@@ -165,28 +147,6 @@ def generar_nro_carnet():
             if not cursor.fetchone():
                 return nro_carnet
 
-
-@app.route("/registro_doctor", methods=["POST"])
-def doctor():
-    try:
-        data = request.get_json()
-        nombre = data["nombre"]
-        nacimiento = data["nacimiento"]
-        sexo = data["sexo"]
-        cedula = data["cedula"]
-        carnet = generar_nro_carnet()
-        especialidades = [data["especialidad"]]
-        clave = data["clave"]
-        confirmar_clave = data["confirmar_clave"]
-
-        if clave != confirmar_clave:
-            return {"error": "Las claves no coinciden"}, 400
-
-        doctor = Doctor(nombre, nacimiento, sexo, cedula, carnet, especialidades, clave)
-        doctor.save()
-        return {"message": "Doctor creado exitosamente"}, 201
-    except Exception as e:
-        return {"error": str(e)}, 500
 
 
 if __name__ == "__main__":
