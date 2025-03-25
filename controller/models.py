@@ -72,12 +72,12 @@ class Cita:
                 SELECT 
                     citas.id, 
                     doctores.nombre AS doctor_nombre, 
-                    pacientes.nombre AS paciente_nombre, 
+                    patients.name AS paciente_nombre, 
                     citas.fecha, 
                     citas.motivo
                 FROM citas
                 JOIN doctores ON citas.doctor_id = doctores.id
-                JOIN pacientes ON citas.patient_id = pacientes.id
+                JOIN patients ON citas.patient_id = patients.id
                 """
             )
             rows = cursor.fetchall()

@@ -19,7 +19,7 @@ def index():
     return render_template("user/login.html")
 
 
-@app.route("/crear_citas")
+@app.route("/crear_citas", methods=["GET"])
 def crear_citas():
     return render_template("user/crear_citas.html")
 
@@ -39,14 +39,15 @@ def perfil():
     return render_template("user/tipo_usuario.html")
 
 
-@app.route("/historial")
-def historial():
-    return render_template("user/historial.html")
+@app.route("/menu")
+def menu_lateral():
+    return render_template("user/menulateral.html")
 
 
 @app.route("/citas")
 def citas():
     return render_template("user/ver_citas.html")
+
 
 @app.route("/crear_cita", methods=["POST"])
 def crear_cita_route():
@@ -68,7 +69,7 @@ def crear_cita_route():
 
 
 @app.route("/citas/listar", methods=["GET"])
-def citas():
+def list_citas():
     try:
         citas = Cita.list()  # Ensure Cita is imported and used here
         return {"citas": citas}, 200
@@ -113,4 +114,3 @@ def doctor():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
