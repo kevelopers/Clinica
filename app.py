@@ -36,53 +36,7 @@ def dashboard():
 
 @app.route("/tipo_usuario")
 def perfil():
-<<<<<<< HEAD
-    return render_template('user/tipo_usuario.html')
-
-@app.route('/menulateral', methods=['GET'])
-def menulateral():
-    return render_template('user/menulateral.html')
-
-@app.route('/contacto', methods=['GET'])
-def contacto():
-    return render_template('user/contacto.html')
-
-def generar_nro_carnet():
-    with sqlite3.connect('database.db') as conn:
-        cursor = conn.cursor()
-        while True:
-            nro_carnet = str(random.randint(100000, 999999))
-            cursor.execute('SELECT nro_carnet FROM doctores WHERE nro_carnet = ?', (nro_carnet,))
-            if not cursor.fetchone():
-                return nro_carnet
-
-@app.route('/registro_doctor', methods=['POST'])
-def doctor():
-    try:
-        data = request.get_json()
-        nombre = data['nombre']
-        nacimiento = data['nacimiento']
-        sexo = data['sexo']
-        cedula = data['cedula']
-        carnet = generar_nro_carnet()
-        especialidades = [data['especialidad']]
-        clave = data['clave']
-        confirmar_clave = data['confirmar_clave']
-
-        if clave != confirmar_clave:
-            return {"error": "Las claves no coinciden"}, 400
-
-        doctor = Doctor(nombre, nacimiento, sexo, cedula, carnet, especialidades, clave)
-        doctor.save()
-        return {"message": "Doctor creado exitosamente"}, 201
-    except Exception as e:
-        return {"error": str(e)}, 500
-
-if __name__ == '__main__':
-    app.run(debug=True)
-=======
     return render_template("user/tipo_usuario.html")
->>>>>>> c0760b661e8af9de87119766d8402bfa50bdc84e
 
 
 @app.route("/menu")
