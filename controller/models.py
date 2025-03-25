@@ -1,6 +1,7 @@
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 
+
 class Doctor:
     def __init__(self, nombre, nacimiento, sexo, cedula, carnet, especialidades, clave):
         self.nombre = nombre
@@ -12,19 +13,30 @@ class Doctor:
         self.clave = generate_password_hash(clave)
 
     def save(self):
-        with sqlite3.connect('database.db') as conn:
+        with sqlite3.connect("database.db") as conn:
             cursor = conn.cursor()
             try:
-                cursor.execute('''
+                cursor.execute(
+                    """
                     INSERT INTO doctores (nombre, fecha_nacimiento, sexo, cedula, nro_carnet, clave, especialidad)
                     VALUES (?, ?, ?, ?, ?, ?, ?)
-                ''', (self.nombre, self.nacimiento, self.sexo, self.cedula, self.carnet, self.clave, self.especialidades[0]))
+                """,
+                    (
+                        self.nombre,
+                        self.nacimiento,
+                        self.sexo,
+                        self.cedula,
+                        self.carnet,
+                        self.clave,
+                        self.especialidades[0],
+                    ),
+                )
                 conn.commit()
             except sqlite3.Error as e:
                 print(f"Error de SQLite: {e}")
                 raise e
-            
-            
+
+
 class Cita:
     def __init__(self, doctor_id, patient_id, fecha, motivo):
         self.doctor_id = doctor_id
@@ -33,26 +45,49 @@ class Cita:
         self.motivo = motivo
 
     def save(self):
-        with sqlite3.connect('database.db') as conn:
+        with sqlite3.connect("database.db") as conn:
             cursor = conn.cursor()
-            cursor.execute('''
+            cursor.execute(
+                """
                 INSERT INTO citas (doctor_id, patient_id, fecha, motivo)
                 VALUES (?, ?, ?, ?)
-            ''', (self.doctor_id, self.patient_id, self.fecha, self.motivo))
+            """,
+                (self.doctor_id, self.patient_id, self.fecha, self.motivo),
+            )
             conn.commit()
 
     @staticmethod
     def find_by_id(appointment_id):
-        with sqlite3.connect('database.db') as conn:
+        with sqlite3.connect("database.db") as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM appointments WHERE id = ?', (appointment_id,))
+            cursor.execute("SELECT * FROM appointments WHERE id = ?", (appointment_id,))
             return cursor.fetchone()
 
     @staticmethod
     def list():
-        with sqlite3.connect('database.db') as conn:
+        with sqlite3.connect("database.db") as conn:
             cursor = conn.cursor()
-            cursor.execute('SELECT * FROM citas')
+            cursor.execute(
+                """
+                SELECT 
+                    citas.id, 
+                    doctores.nombre AS doctor_nombre, 
+                    pacientes.nombre AS paciente_nombre, 
+                    citas.fecha, 
+                    citas.motivo
+                FROM citas
+                JOIN doctores ON citas.doctor_id = doctores.id
+                JOIN pacientes ON citas.patient_id = pacientes.id
+                """
+            )
             rows = cursor.fetchall()
-            return [{"id": row[0], "doctor_id": row[1], "patient_id": row[2], "fecha": row[3], "motivo": row[4]} for row in rows]
-
+            return [
+                {
+                    "id": row[0],
+                    "doctor_nombre": row[1],
+                    "paciente_nombre": row[2],
+                    "fecha": row[3],
+                    "motivo": row[4],
+                }
+                for row in rows
+            ]

@@ -9,55 +9,70 @@ app = Flask(__name__)
 CORS(app)
 
 initialize_database()
-print('Database initialized')
+print("Database initialized")
+
 
 # Ruta principal (página de inicio)
-@app.route('/')
+@app.route("/")
 def index():
     # Mostrar un menú de opciones para el usuario
-    return render_template('user/login.html')
+    return render_template("user/login.html")
 
-@app.route('/crear_citas')
+
+@app.route("/crear_citas")
 def crear_citas():
-    return render_template('user/crear_citas.html')
+    return render_template("user/crear_citas.html")
 
-@app.route('/registro/paciente')
+
+@app.route("/registro/paciente")
 def registro():
-    return render_template('user/registro_paciente.html')
+    return render_template("user/registro_paciente.html")
 
-@app.route('/registro/doctor')
+
+@app.route("/registro/doctor")
 def dashboard():
-    return render_template('user/registro_doctor.html')
+    return render_template("user/registro_doctor.html")
 
-@app.route('/tipo_usuario')
+
+@app.route("/tipo_usuario")
 def perfil():
-    return render_template('user/tipo_usuario.html')
+    return render_template("user/tipo_usuario.html")
 
-@app.route('/historial')
+
+@app.route("/historial")
 def historial():
-    return render_template('user/historial.html')
+    return render_template("user/historial.html")
+
+
+@app.route("/citas")
+def citas():
+    return render_template("user/ver_citas.html")
+
 
 def generar_nro_carnet():
-    with sqlite3.connect('database.db') as conn:
+    with sqlite3.connect("database.db") as conn:
         cursor = conn.cursor()
         while True:
             nro_carnet = str(random.randint(100000, 999999))
-            cursor.execute('SELECT nro_carnet FROM doctores WHERE nro_carnet = ?', (nro_carnet,))
+            cursor.execute(
+                "SELECT nro_carnet FROM doctores WHERE nro_carnet = ?", (nro_carnet,)
+            )
             if not cursor.fetchone():
                 return nro_carnet
 
-@app.route('/registro_doctor', methods=['POST'])
+
+@app.route("/registro_doctor", methods=["POST"])
 def doctor():
     try:
         data = request.get_json()
-        nombre = data['nombre']
-        nacimiento = data['nacimiento']
-        sexo = data['sexo']
-        cedula = data['cedula']
+        nombre = data["nombre"]
+        nacimiento = data["nacimiento"]
+        sexo = data["sexo"]
+        cedula = data["cedula"]
         carnet = generar_nro_carnet()
-        especialidades = [data['especialidad']]
-        clave = data['clave']
-        confirmar_clave = data['confirmar_clave']
+        especialidades = [data["especialidad"]]
+        clave = data["clave"]
+        confirmar_clave = data["confirmar_clave"]
 
         if clave != confirmar_clave:
             return {"error": "Las claves no coinciden"}, 400
@@ -68,18 +83,19 @@ def doctor():
     except Exception as e:
         return {"error": str(e)}, 500
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     app.run(debug=True)
 
 
-@app.route('/crear_cita', methods=['POST'])
+@app.route("/crear_cita", methods=["POST"])
 def crear_cita_route():
     try:
         data = request.get_json()
-        doctor_id = data['doctor_id']
-        patient_id = data['patient_id']
-        fecha = data['fecha']
-        motivo = data['motivo']
+        doctor_id = data["doctor_id"]
+        patient_id = data["patient_id"]
+        fecha = data["fecha"]
+        motivo = data["motivo"]
 
         cita = Cita(doctor_id, patient_id, fecha, motivo)
         cita.save()
@@ -90,7 +106,8 @@ def crear_cita_route():
     except Exception as e:
         return {"error": str(e)}, 500
 
-@app.route('/citas', methods=['GET'])
+
+@app.route("/citas", methods=["GET"])
 def citas():
     try:
         citas = Cita.list()  # Ensure Cita is imported and used here
