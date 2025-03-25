@@ -14,9 +14,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Referencia a Bootstrap CSS -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='bootstrap/css/bootstrap.min.css') }}"
+    />
     <!-- Referencia a tu archivo CSS personalizado -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='bootstrap/css/registro.css') }}" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='bootstrap/css/registro.css') }}"
+    />
     <title>Login</title>
   </head>
 
@@ -39,14 +45,17 @@
       >
         <!-- Imagen de fondo -->
         <div style="text-align: center">
-          <img src="{{ url_for('static', filename='img/logoClin.png') }}" width="200px" />
+          <img
+            src="{{ url_for('static', filename='img/logoClin.png') }}"
+            width="200px"
+          />
         </div>
 
         <br />
 
         <h5 style="text-align: center"><b>INICIAR SESIÓN</b></h5>
         <!-- Formulario Con sus campos -->
-        <form action="" method="POST">
+        <form id="loginForm">
           <div class="mb-3">
             <label for="usuario" class="form-label"><b>Usuario</b></label>
             <input
@@ -86,4 +95,44 @@
   </body>
   <!-- Referencia a Bootstrap JS -->
   <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
+  <script>
+    document
+      .getElementById("loginForm")
+      .addEventListener("submit", async function (event) {
+        event.preventDefault(); // Evitar que el formulario se envíe de forma tradicional
+
+        const username = document.getElementById("usuario").value;
+        const password = document.getElementById("clave").value;
+
+        try {
+          const response = await fetch("{{ url_for('login') }}", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ username, password }),
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            if (response.status === 200 && data) {
+              if (data.role === "doctor") {
+                window.location.href = "{{ url_for('citas') }}";
+              } else if (data.role === "paciente") {
+                window.location.href = "{{ url_for('crear_citas') }}";
+              } else {
+                alert("Rol no reconocido");
+              }
+            } else {
+              alert("Credenciales incorrectas");
+            }
+          } else {
+            alert("Error al iniciar sesión");
+          }
+        } catch (error) {
+          console.error("Error al conectar con el servidor:", error);
+          alert("Error al conectar con el servidor");
+        }
+      });
+  </script>
 </html>

@@ -36,6 +36,30 @@ class Doctor:
                 print(f"Error de SQLite: {e}")
                 raise e
 
+    def list():
+        with sqlite3.connect("database.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM doctores")
+            rows = cursor.fetchall()
+            return [
+                {
+                    "id": row[0],
+                    "nombre": row[1],
+                    "fecha_nacimiento": row[2],
+                    "sexo": row[3],
+                    "cedula": row[4],
+                    "nro_carnet": row[5],
+                    "especialidad": row[7],
+                }
+                for row in rows
+            ]
+
+    def find_by_id(doctor_id):
+        with sqlite3.connect("database.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM doctores WHERE id = ?", (doctor_id,))
+            return cursor.fetchone()
+
 
 class Cita:
     def __init__(self, doctor_id, patient_id, fecha, motivo):
@@ -161,15 +185,21 @@ class Paciente:  # Ensure Paciente is imported and used here
                 ),
             )
             conn.commit()
+    def find_by_id(patient_id):
+        with sqlite3.connect("database.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM patients WHERE id = ?", (patient_id,))
+            return cursor.fetchone()
 
 
 class User:
     def __init__(self, username, password, role):
         self.username = username
         self.role = role
-        self.password = generate_password_hash(password)
+        self.password = password
 
     def save(self):
+        hash_password = generate_password_hash(self.password)
         with sqlite3.connect("database.db") as conn:
             cursor = conn.cursor()
             cursor.execute(
@@ -177,7 +207,7 @@ class User:
                 INSERT INTO users (username, password, role)
                 VALUES (?, ?)
             """,
-                (self.username, self.password),
+                (self.username, hash_password),
             )
             conn.commit()
 
@@ -188,7 +218,6 @@ class User:
             cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
             row = cursor.fetchone()
             if row:
-                print(row[2])
                 return User(username=row[1], password=row[2], role=row[3])
             return None
 

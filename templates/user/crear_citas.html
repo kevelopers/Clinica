@@ -138,8 +138,8 @@
             data.doctores.forEach((doctor) => {
               console.log(doctor);
               const option = document.createElement("option");
-              option.value = doctor[0];
-              option.textContent = doctor[2];
+              option.value = doctor.id;
+              option.textContent = doctor.nombre;
               doctorSelect.appendChild(option);
             });
           } else {

@@ -82,6 +82,7 @@
 
             // Agregar las filas dinámicamente
             data.citas.forEach((cita) => {
+              console.log(cita);
               const row = document.createElement("tr");
               const fechaCell = document.createElement("td");
               fechaCell.textContent = cita.fecha;
