@@ -21,19 +21,19 @@ def index():
 def crear_citas():
     return render_template('user/crear_citas.html')
 
-@app.route('/registro/paciente', methods=['GET'])
+@app.route('/registro/paciente')
 def registro():
     return render_template('user/registro_paciente.html')
 
-@app.route('/registro/doctor', methods=['GET'])
+@app.route('/registro/doctor')
 def dashboard():
     return render_template('user/registro_doctor.html')
 
-@app.route('/tipo/usuario', methods=['GET'])
+@app.route('/tipo/usuario')
 def perfil():
     return render_template('user/tipo_usuario.html')
 
-@app.route('/historial', methods=['GET'])
+@app.route('/historial')
 def historial():
     return render_template('user/historial.html')
 
