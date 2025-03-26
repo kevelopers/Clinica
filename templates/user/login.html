@@ -116,6 +116,9 @@
           if (response.ok) {
             const data = await response.json();
             if (response.status === 200 && data) {
+              //guardar id y rol en el navegador
+              localStorage.setItem("id", data.id);
+              localStorage.setItem("role", data.role);
               if (data.role === "doctor") {
                 window.location.href = "{{ url_for('citas') }}";
               } else if (data.role === "paciente") {

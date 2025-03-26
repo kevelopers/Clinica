@@ -49,16 +49,30 @@ def contacto():
     return render_template("user/contacto.html")
 
 
-def generar_nro_carnet():
-    with sqlite3.connect("database.db") as conn:
-        cursor = conn.cursor()
-        while True:
-            nro_carnet = str(random.randint(100000, 999999))
-            cursor.execute(
-                "SELECT nro_carnet FROM doctores WHERE nro_carnet = ?", (nro_carnet,)
-            )
-            if not cursor.fetchone():
-                return nro_carnet
+@app.route("/paciente/<int:id>", methods=["GET"])
+def obtener_paciente(id):
+    try:
+        paciente = Paciente.find_by_id(id)
+        pacienteJson = {
+            "id": paciente[0],
+            "name": paciente[2],
+            "identificacion_tipo": paciente[3],
+            "identificacion_numero": paciente[4],
+            "telefono": paciente[5],
+            "direccion": paciente[6],
+            "descendencia": paciente[7],
+            "nombre_hijo": paciente[8],
+            "fecha_nacimiento_hijo": paciente[9],
+            "sexo_hijo": paciente[10],
+            "fecha_nacimiento": paciente[11],
+            "sexo": paciente[12],
+            "patologia": paciente[13],
+        }
+        if not paciente:
+            return {"error": "Paciente no encontrado"}, 404
+        return {"paciente": paciente}, 200
+    except Exception as e:
+        return {"error": str(e)}, 500
 
 
 @app.route("/doctores", methods=["GET"])
@@ -185,7 +199,8 @@ def login():
         user = User.find_by_username(username)
         if user is None or not user.check_password(password):
             return {"error": "Usuario o clave incorrecta"}, 401
-        return {"message": "Inicio de sesión exitoso", "role": user.role}, 200
+        id = User.find_id_by_username(username)
+        return {"message": "Inicio de sesión exitoso", "id": id, "role": user.role}, 200
     except KeyError as e:
         return {"error": f"Falta el campo requerido: {str(e)}"}, 400
     except Exception as e:

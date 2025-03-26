@@ -108,7 +108,6 @@
     </div>
     <script src="../bootstrap/js/bootstrap.min.js"></script>
     <script>
-      // Configurar los límites de fecha y hora
       const fechaHoraInput = document.getElementById("fechaHora");
       const ahora = new Date();
       const proximoAno = new Date(
@@ -122,6 +121,29 @@
 
       const proximoAnoFormateado = proximoAno.toISOString().slice(0, 16);
       fechaHoraInput.max = proximoAnoFormateado;
+
+      // cargar datos del usuario
+      // puedes copiar y pegar esta funcion en tus otros archivos JS
+      async function cargarUsuario() {
+        try {
+          id = localStorage.getItem("id");
+          const response = await fetch(`http://127.0.0.1:5000/paciente/${id}`);
+          if (response.ok) {
+            const data = await response.json();
+            console.log("Datos del usuario:", data);
+            return data.paciente;
+          } else {
+            console.error("Error al cargar los datos del usuario");
+          }
+        } catch (err) {
+          console.error("Error al conectar con el servidor:", err);
+        }
+      }
+      // llenar informacion en formulario con los datos del usuario
+      async function llenarFormulario() {
+        const usuario = await cargarUsuario();
+        document.getElementById("paciente").value = usuario.name;
+      }
 
       // Cargar la lista de doctores dinámicamente
       async function cargarDoctores() {
@@ -152,6 +174,8 @@
 
       // Llamar a la función para cargar doctores al cargar la página
       cargarDoctores();
+      // Llenar formulario con los datos del usuario
+      llenarFormulario();
 
       // Enviar el formulario como JSON al endpoint /crear_cita
       document
