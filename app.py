@@ -18,6 +18,9 @@ def index():
     # Mostrar un menú de opciones para el usuario
     return render_template("user/login.html")
 
+@app.route("/cargar_horario", methods=["GET"])
+def horario():
+    return render_template("user/cargar_horario.html")
 
 @app.route("/crear_citas", methods=["GET"])
 def crear_citas():
