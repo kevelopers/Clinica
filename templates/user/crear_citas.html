@@ -18,8 +18,10 @@
       .fondo-delineado {
         margin: 0;
         height: 100vh;
-        background: linear-gradient(to bottom, #ffffff, #ffffff);
-        display: flex;
+        background-image: url('{{ url_for('static', filename='img/fondo_clinica.jpg') }}');
+  background-size: cover; /* Asegura que la imagen cubra todo el fondo */
+  background-position: center; /* Centra la imagen */
+  display: flex; /* Usamos flexbox para el diseño */
         /* Usamos flexbox para el diseño */
       }
 
@@ -44,11 +46,11 @@
   <body class="fondo-delineado">
     <iframe id="sidebarFrame" src="{{ url_for('menulateral') }}"></iframe>
     <div class="main-content">
-      <div class="container">
+      <div class="container" style="margin-left: 50px;">
         <br /><br /><br />
-        <div class="row justify-content-center">
+        <div class="row ">
           <div
-            class="col-md-8 col-lg-6"
+            class="col-md-10 col-lg-10"
             style="
               background-color: #f5f3f4;
               color: #17283b;
