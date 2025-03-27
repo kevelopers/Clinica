@@ -62,21 +62,36 @@ class Doctor:
 
 
 class Cita:
-    def __init__(self, doctor_id, patient_id, fecha, motivo):
+    def __init__(self, doctor_id, patient_id, fecha, atendida, motivo):
         self.doctor_id = doctor_id
         self.patient_id = patient_id
         self.fecha = fecha
         self.motivo = motivo
+        self.atendida = atendida
 
     def save(self):
         with sqlite3.connect("database.db") as conn:
             cursor = conn.cursor()
             cursor.execute(
                 """
-                INSERT INTO citas (doctor_id, patient_id, fecha, motivo)
+                INSERT INTO citas (doctor_id, patient_id, fecha, atendida,  motivo)
                 VALUES (?, ?, ?, ?)
             """,
-                (self.doctor_id, self.patient_id, self.fecha, self.motivo),
+                (
+                    self.doctor_id,
+                    self.patient_id,
+                    self.fecha,
+                    self.atendida,
+                    self.motivo,
+                ),
+            )
+            conn.commit()
+
+    def mark_as_attended(appointment_id):
+        with sqlite3.connect("database.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE citas SET atendida = 1 WHERE id = ?", (appointment_id,)
             )
             conn.commit()
 
@@ -88,13 +103,15 @@ class Cita:
             return cursor.fetchone()
 
     @staticmethod
-    def list():
+    def list_by_doctor(doctor_id):
         with sqlite3.connect("database.db") as conn:
             cursor = conn.cursor()
             cursor.execute(
                 """
                 SELECT 
                     citas.id, 
+                    citas.patient_id,
+                    citas.doctor_id,
                     doctores.nombre AS doctor_nombre, 
                     patients.name AS paciente_nombre, 
                     citas.fecha, 
@@ -102,16 +119,21 @@ class Cita:
                 FROM citas
                 JOIN doctores ON citas.doctor_id = doctores.id
                 JOIN patients ON citas.patient_id = patients.id
-                """
+                WHERE citas.atendida = 0
+                AND citas.doctor_id = ?
+                """,
+                (doctor_id,),
             )
             rows = cursor.fetchall()
             return [
                 {
                     "id": row[0],
-                    "doctor_nombre": row[1],
-                    "paciente_nombre": row[2],
-                    "fecha": row[3],
-                    "motivo": row[4],
+                    "patient_id": row[1],
+                    "doctor_id": row[2],
+                    "doctor_nombre": row[3],
+                    "paciente_nombre": row[4],
+                    "fecha": row[5],
+                    "motivo": row[6],
                 }
                 for row in rows
             ]
@@ -203,10 +225,12 @@ class Paciente:  # Ensure Paciente is imported and used here
 
 
 class User:
-    def __init__(self, username, password, role):
+    def __init__(self, username, password, id_paciente, id_doctor, role):
         self.username = username
         self.role = role
         self.password = password
+        self.id_paciente = id_paciente
+        self.id_doctor = id_doctor
 
     def save(self):
         hash_password = generate_password_hash(self.password)
@@ -214,10 +238,16 @@ class User:
             cursor = conn.cursor()
             cursor.execute(
                 """
-                INSERT INTO users (username, password, role)
+                INSERT INTO users (username, password, role, id_paciente, id_doctor)
                 VALUES (?, ?, ?)
             """,
-                (self.username, hash_password, self.role),
+                (
+                    self.username,
+                    hash_password,
+                    self.role,
+                    self.id_paciente,
+                    self.id_doctor,
+                ),
             )
             conn.commit()
 
@@ -228,7 +258,13 @@ class User:
             cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
             row = cursor.fetchone()
             if row:
-                return User(username=row[1], password=row[2], role=row[3])
+                return User(
+                    username=row[1],
+                    password=row[2],
+                    id_doctor=row[3],
+                    id_paciente=row[4],
+                    role=row[5],
+                )
             return None
 
     def find_id_by_username(username):
@@ -242,3 +278,89 @@ class User:
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
+
+
+class HorariosDoctor:
+    def __init__(self, doctor_id, dia, hora_inicio, hora_fin):
+        self.doctor_id = doctor_id
+        self.dia = dia
+        self.hora_inicio = hora_inicio
+        self.hora_fin = hora_fin
+
+    def save(self):
+        with sqlite3.connect("database.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                INSERT INTO horarios_doctor (doctor_id, dia, hora_inicio, hora_fin)
+                VALUES (?, ?, ?, ?)
+            """,
+                (self.doctor_id, self.dia, self.hora_inicio, self.hora_fin),
+            )
+            conn.commit()
+
+    @staticmethod
+    def get_by_doctor_id(doctor_id):
+        with sqlite3.connect("database.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT dia, hora_inicio, hora_fin FROM horarios_doctor WHERE doctor_id = ?",
+                (doctor_id,),
+            )
+            rows = cursor.fetchall()
+            return [
+                {"dia": row[0], "hora_inicio": row[1], "hora_fin": row[2]}
+                for row in rows
+            ]
+
+
+class HistorialCitas:
+    def __init__(self, id_doctor, id_paciente, diagnostico):
+        self.id_doctor = id_doctor
+        self.id_paciente = id_paciente
+        self.diagnostico = diagnostico
+
+    def save(self):
+        with sqlite3.connect("database.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                INSERT INTO historial_citas (id_doctor, id_paciente, diagnostico)
+                VALUES (?, ?, ?, ?, ?)
+            """,
+                (
+                    self.id_paciente,
+                    self.id_paciente,
+                    self.diagnostico,
+                ),
+            )
+            conn.commit()
+
+    @staticmethod
+    def list_by_patient(patient_id):
+        with sqlite3.connect("database.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT 
+                    historial_citas.id, 
+                    doctores.nombre AS doctor_nombre, 
+                    patients.name AS paciente_nombre, 
+                    historial_citas.diagnostico
+                FROM historial_citas
+                JOIN doctores ON historial_citas.id_doctor = doctores.id
+                JOIN patients ON historial_citas.id_paciente = patients.id
+                WHERE historial_citas.id_paciente = ?
+                """,
+                (patient_id,),
+            )
+            rows = cursor.fetchall()
+            return [
+                {
+                    "id": row[0],
+                    "doctor_nombre": row[1],
+                    "paciente_nombre": row[2],
+                    "diagnostico": row[3],
+                }
+                for row in rows
+            ]

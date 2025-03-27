@@ -117,11 +117,13 @@
             const data = await response.json();
             if (response.status === 200 && data) {
               //guardar id y rol en el navegador
-              localStorage.setItem("id", data.id);
               localStorage.setItem("role", data.role);
-              if (data.role === "doctor") {
+              console.log("Usuario:", data);
+              if (data.role == "doctor") {
+                localStorage.setItem("id", data.id);
                 window.location.href = "{{ url_for('citas') }}";
-              } else if (data.role === "paciente") {
+              } else if (data.role == "paciente") {
+                localStorage.setItem("id", data.id);
                 window.location.href = "{{ url_for('crear_citas') }}";
               } else {
                 alert("Rol no reconocido");

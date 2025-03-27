@@ -139,6 +139,30 @@
           console.error("Error al conectar con el servidor:", err);
         }
       }
+      // obtener datos del doctor
+      async function cargarDoctor(doctorId) {
+        try {
+          const response = await fetch(
+            `http://127.0.0.1:5000/doctor/${doctorId}`
+          );
+          if (response.ok) {
+            const data = await response.json();
+            return data.doctor;
+          } else {
+            console.error("Error al cargar los datos del doctor");
+          }
+        } catch (err) {
+          console.error("Error al conectar con el servidor:", err);
+        }
+      }
+      //cada vez que se seleccione un doctor se cargara la informacion del doctor
+      document
+        .getElementById("doctor")
+        .addEventListener("change", async (e) => {
+          const doctorId = e.target.value;
+          const doctor = await cargarDoctor(doctorId);
+          console.log("Doctor seleccionado:", doctor);
+        });
       // llenar informacion en formulario con los datos del usuario
       async function llenarFormulario() {
         const usuario = await cargarUsuario();
@@ -155,6 +179,13 @@
 
             // Limpiar opciones existentes
             doctorSelect.innerHTML = "";
+            //agregar una por defecto
+            const optionDefault = document.createElement("option");
+            optionDefault.value = "";
+            optionDefault.textContent = "Seleccione un doctor";
+            optionDefault.disabled = true;
+            optionDefault.selected = true;
+            doctorSelect.appendChild(optionDefault);
 
             // Agregar opciones dinámicamente
             data.doctores.forEach((doctor) => {

@@ -18,9 +18,11 @@ def index():
     # Mostrar un menú de opciones para el usuario
     return render_template("user/login.html")
 
+
 @app.route("/cargar_horario", methods=["GET"])
 def horario():
     return render_template("user/cargar_horario.html")
+
 
 @app.route("/crear_citas", methods=["GET"])
 def crear_citas():
@@ -73,7 +75,7 @@ def obtener_paciente(id):
         }
         if not paciente:
             return {"error": "Paciente no encontrado"}, 404
-        return {"paciente": paciente}, 200
+        return {"paciente": pacienteJson}, 200
     except Exception as e:
         return {"error": str(e)}, 500
 
@@ -82,6 +84,39 @@ def obtener_paciente(id):
 def doctores():
     doctores = Doctor.list()
     return {"doctores": doctores}, 200
+
+
+@app.route("/doctor/<int:id>", methods=["GET"])
+def obtener_doctor(id):
+    try:
+        doctor = Doctor.find_by_id(id)
+        horarios = HorariosDoctor.get_by_doctor_id(id)
+        doctorJson = {
+            "id": doctor[0],
+            "nombre": doctor[1],
+            "nacimiento": doctor[2],
+            "sexo": doctor[3],
+            "cedula": doctor[4],
+            "carnet": doctor[5],
+            "especialidades": doctor[6],
+            "horarios": horarios,
+        }
+        if not doctor:
+            return {"error": "Doctor no encontrado"}, 404
+        return {"doctor": doctorJson}, 200
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+
+@app.route("/historial/<int:id>", methods=["GET"])
+def obtener_historial(id):
+    try:
+        historial = HistorialCitas.list_by_patient(id)
+        if not historial:
+            return {"error": "Historial no encontrado"}, 404
+        return {"historial": historial}, 200
+    except Exception as e:
+        return {"error": str(e)}, 500
 
 
 @app.route("/registro_doctor", methods=["POST"])
@@ -202,7 +237,13 @@ def login():
         user = User.find_by_username(username)
         if user is None or not user.check_password(password):
             return {"error": "Usuario o clave incorrecta"}, 401
-        id = User.find_id_by_username(username)
+        print(user.role)
+        print(user.id_paciente)
+        print(user.id_doctor)
+        if user.role == "paciente":
+            id = user.id_paciente
+        else:
+            id = user.id_doctor
         return {"message": "Inicio de sesión exitoso", "id": id, "role": user.role}, 200
     except KeyError as e:
         return {"error": f"Falta el campo requerido: {str(e)}"}, 400
@@ -210,11 +251,12 @@ def login():
         return {"error": str(e)}, 500
 
 
-@app.route("/citas/listar", methods=["GET"])
-def list_citas():
+@app.route("/citas/listar/<int:doctor_id>", methods=["GET"])
+def list_citas(doctor_id):
     try:
-        print("Listando citas")
-        citas = Cita.list()  # Ensure Cita is imported and used here
+        citas = Cita.list_by_doctor(
+            doctor_id
+        )  # Ensure Cita has a method to list by doctor_id
         return {"citas": citas}, 200
     except Exception as e:
         return {"error": str(e)}, 500
