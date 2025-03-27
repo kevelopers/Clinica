@@ -48,7 +48,7 @@
         background-color: white;
         padding: 20px;
         border-radius: 5px;
-        width: 300px;
+        width: 80%;
       }
       .modal.show {
         display: flex;
@@ -133,51 +133,89 @@
 
             <!-- Modal -->
             <div
-              class="modal fade"
-              id="pacienteModal"
-              tabindex="-1"
-              aria-labelledby="pacienteModalLabel"
-              aria-hidden="true"
-            >
-              <div class="modal-dialog">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="pacienteModalLabel">
-                      Detalles del Paciente
-                    </h5>
-                    <button
-                      type="button"
-                      class="btn-close"
-                      data-bs-dismiss="modal"
-                      aria-label="Cerrar"
-                    ></button>
-                  </div>
-                  <div class="modal-body">
-                    <p>
-                      <strong>Nombre:</strong> <span id="modalNombre"></span>
-                    </p>
-                    <p><strong>Historial:</strong></p>
-                    <ul id="modalHistorial"></ul>
-                  </div>
-                  <div class="modal-footer">
-                    <button
-                      type="button"
-                      class="btn btn-secondary"
-                      data-bs-dismiss="modal"
-                    >
-                      Cerrar
-                    </button>
-                    <button
-                      type="button"
-                      class="btn btn-primary"
-                      id="exportarPDF"
-                    >
-                      Exportar a PDF
-                    </button>
-                  </div>
+            class="modal fade"
+            id="pacienteModal"
+            tabindex="-1"
+            aria-labelledby="pacienteModalLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog modal-lg"> <!-- Añade la clase modal-lg aquí -->
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="pacienteModalLabel">
+                    Detalles del Paciente
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Cerrar"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <p>
+                    <strong>Nombre:</strong> <span id="modalNombre"></span>
+                  </p>
+                  <ul id="cedula">Cedula:</ul>
+                  <ul id="fecha_c">Fecha Consulta:</ul>
+                  <ul id="celular">Celular:</ul>
+                  <ul id="direccion">Direccion:</ul>
+                  <p><strong>Historial:</strong></p>
+                  <ul id="modalHistorial"></ul>
+                  
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Cerrar
+                  </button>
+                  <button type="button" class="btn btn-success" id="submitButton">
+                    Crear Historial
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    id="exportarPDF"
+                  >
+                    Exportar a PDF
+                  </button>
                 </div>
               </div>
             </div>
+          </div>
+          
+
+          <!-- Segundo Modal -->
+<div class="modal fade" id="historialModal" tabindex="-1" aria-labelledby="historialModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="historialModalLabel">Crear Historial</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <!-- Contenido del segundo modal -->
+        <div class="mb-3">
+          <label for="informe" class="form-label"><b>Informe</b></label>
+          <textarea
+            type="text"
+            class="form-control"
+            id="informe"
+            name="informe"
+          ></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+        <button type="button" class="btn btn-primary">Guardar Historial</button>
+      </div>
+    </div>
+  </div>
+</div>
+
           </div>
         </div>
       </div>
@@ -287,36 +325,67 @@
 
       // Exportar a PDF
       document.getElementById("exportarPDF").addEventListener("click", () => {
-        const pdf = new jsPDF();
-        const nombre = document.getElementById("modalNombre").textContent;
-        const historial = document.getElementById("modalHistorial").innerText;
+    const pdf = new jsPDF();
+    const nombreElement = document.getElementById("modalNombre");
+    const historialElement = document.getElementById("modalHistorial");
+    const celularElement = document.getElementById("modalCelular");
+    const direccionElement = document.getElementById("modalDireccion");
+    const fechaConsultaElement = document.getElementById("modalFechaConsulta");
+    const cedulaElement = document.getElementById("modalCedula");
 
-        // Configuración inicial
-        pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(18);
-        pdf.text(`Reporte Médico de ${nombre}`, 105, 15, { align: "center" });
+    const nombre = nombreElement ? nombreElement.textContent : "";
+    const historial = historialElement ? historialElement.innerText : "";
+    const celular = celularElement ? celularElement.textContent : "";
+    const direccion = direccionElement ? direccionElement.textContent : "";
+    const fechaConsulta = fechaConsultaElement ? fechaConsultaElement.textContent : "";
+    const cedula = cedulaElement ? cedulaElement.textContent : "";
 
-        // Dibujar recuadro para el nombre
-        pdf.setDrawColor(0);
-        pdf.setFillColor(240, 240, 240);
-        pdf.rect(10, 20, 190, 10, "F");
-        pdf.setFontSize(12);
-        pdf.text(`Paciente: ${nombre}`, 15, 26);
+    // Configuración inicial
+    pdf.setFont("helvetica", "bold");
+    pdf.setFontSize(18);
+    pdf.text(`Reporte Médico de ${nombre}`, 105, 15, { align: "center" });
 
-        // Dibujar recuadro para el historial
-        pdf.rect(10, 35, 190, pdf.internal.pageSize.height - 45, "S");
-        pdf.setFont("helvetica", "bold");
-        pdf.text("Historial Médico:", 15, 45);
+    // Dibujar recuadro para el nombre
+    pdf.setDrawColor(0);
+    pdf.setFillColor(240, 240, 240);
+    pdf.rect(10, 20, 190, 10, "F");
+    pdf.setFontSize(12);
+    // Fecha de consulta en la primera fila
+pdf.text(`Fecha de Consulta: ${fechaConsulta}`, 12, 26);
 
-        // Formatear el historial
-        pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(10);
-        const splitHistorial = pdf.splitTextToSize(historial, 180);
-        pdf.text(splitHistorial, 15, 55);
+// Nombre y cédula en la misma fila, abajo
+pdf.text(`Paciente: ${nombre}`, 15, 46);
+pdf.text(`Cédula: ${cedula}`, 120, 46); // Ajusta la posición horizontal según sea necesario
 
-        // Guardar el PDF
-        pdf.save(`Reporte_${nombre}.pdf`);
-      });
+// Dirección y celular en la tercera fila
+pdf.text(`Dirección: ${direccion}`, 15, 66);
+pdf.text(`Celular: ${celular}`, 120, 66); // Ajusta la posición horizontal según sea necesario
+
+// Dibujar recuadro para el historial
+pdf.rect(10, 75, 190, pdf.internal.pageSize.height - 85, "S");
+pdf.setFont("helvetica", "bold");
+pdf.text("Historial Médico:", 15, 85);
+
+// Formatear el historial
+pdf.setFont("helvetica", "normal");
+pdf.setFontSize(10);
+const splitHistorial = pdf.splitTextToSize(historial, 180);
+pdf.text(splitHistorial, 15, 95);
+
+    // Guardar el PDF
+    pdf.save(`Reporte_${nombre}.pdf`);
+});
+
+document.getElementById('submitButton').addEventListener('click', function() {
+  // Cerrar el modal actual
+  var pacienteModal = bootstrap.Modal.getInstance(document.getElementById('pacienteModal'));
+  pacienteModal.hide();
+
+  // Abrir el segundo modal
+  var historialModal = new bootstrap.Modal(document.getElementById('historialModal'));
+  historialModal.show();
+});
+
     </script>
   </body>
 </html>
