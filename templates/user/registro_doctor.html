@@ -226,7 +226,7 @@
                 });
                 console.log("Datos enviados:", data);
                 console.log("Respuesta:", response);
-                if (response) {
+                if (response.status === 201) {
                     const result = await response.json();
                     console.log("Resultado:", result);
                     //alert(result.message || 'Registro Doctor');
