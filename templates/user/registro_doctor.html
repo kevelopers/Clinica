@@ -91,6 +91,7 @@
                         <button type="submit" class="btn btn-primary" id="btnRegistrar">Registrate</button>
                         <div style="color: red;" id="mensajeError" class="mensajeError"></div>
                         <div style="color: green;" id="mensajeRegistro" class="mensajeRegistro"></div>
+                        <div style="color: red;" id="mensajeRegistro1" class="mensajeRegistro"></div>
                         
                     </div>
                  
@@ -182,6 +183,7 @@
 
         if (clave !== confirmar_clave) { // Usar !== para comparar valores
             mensajeDiv.textContent = 'Las contraseñas no coinciden.';
+            location.reload(); // Recargar la página
         } else {
             mensajeDiv.textContent = ''; // Limpiar el mensaje de error si las contraseñas coinciden
             // Aquí puedes agregar el código para enviar el formulario o realizar otras acciones
@@ -223,11 +225,11 @@
 
                 if (response.ok) {
                     const result = await response.json();
-                    alert(result.message || 'Registro Doctor');
+                    //alert(result.message || 'Registro Doctor');
                     mensajeRegistro.textContent = 'Registro Exitoso.';
                 } else {
                     const error = await response.json();
-                    alert(error.error || 'Error al registrar Doctor');
+                    mensajeRegistro1.textContent = 'Error al registrarse.';
                 }
             } catch (err) {
                 console.error(err);
