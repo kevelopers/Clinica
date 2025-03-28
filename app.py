@@ -17,9 +17,7 @@ genai.configure(api_key="AIzaSyCe6pkxFP_IpEhmYpSs20Rhq6L92DUw6Cw") # Reemplaza c
 # Especifica el modelo beta que quieres usar
 model = genai.GenerativeModel('models/gemini-2.0-flash') # o 'models/gemini-pro:beta' u otro modelo beta que desees usar
 
-# Ejemplo de uso
-response = model.generate_content("Explica cómo funciona la IA")
-print(response.text)
+
 # Ruta principal (página de inicio)
 @app.route("/")
 def index():
