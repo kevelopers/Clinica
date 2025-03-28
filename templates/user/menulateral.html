@@ -121,9 +121,34 @@
         .sidebar a:hover {  
             color: rgb(8, 13, 13);  
         }  
+
+.menu-item {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1); /* Borde delgado y semitransparente */
+  padding: 8px 0; /* Ajuste del espacio interno */
+}
+
+.menu-item:last-child {
+  border-bottom: none;
+}
+a {
+  display: block;
+  padding: 8px 0;
+  position: relative;
+}
+
+a:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 5%; /* Ajuste para que la línea no ocupe todo el ancho */
+  width: 90%; /* Ajuste para que la línea no ocupe todo el ancho */
+  height: 1px;
+  background-color: rgb(255, 255, 255);
+}
     </style>  
 </head>  
 <body>  
+     <link rel="shortcut icon" href="../../static/img/logoClin.png" style="width: 50px;" type="image/x-icon">
     <div id="sidebar" class="sidebar" style="font-size: 20px;">  
         <div class="centered-bars" id="toggleBtn">  
             <img src="{{ url_for('static', filename='img/list-solid.svg') }}" width="20px" alt="Bars Icon" class="white-icon">  
@@ -152,14 +177,22 @@
         if (pacienteJSON=='paciente') {  
             sidebarOptions += `  
                 <a href="{{ url_for('crear_citas') }}" target="_top"><i class="fas fa-calendar-check" style="font-size: 20px;"></i> <span style="font-size: 20px;">Crear Citas</span></a>  
+         <div class="separator"></div>
+               
                 <a href="{{ url_for('contacto') }}" target="_top" style="font-size: 20px;"><i class="fas fa-envelope"></i> <span style="font-size: 20px;">Contacto</span></a>  
-                <a href="{{ url_for('disponibilidad_horarios') }}" target="_top" style="font-size: 20px;"><i class="fas fa-calendar"></i> <span style="font-size: 20px;">Horario</span></a>  
+         <div class="separator"></div>
+               
+                <a href="{{ url_for('pregunta') }}" target="_top" style="font-size: 20px;"><i class="fa fa-google-plus"></i> <span style="font-size: 20px;">Sugerencia IA</span></a>  
+         <div class="separator"></div>
+               
                 <a href="#" target="_top"><i class="fas fa-sign-out-alt" style="font-size: 20px;"></i> <span style="font-size: 20px;">Salir</span></a>  
             `;  
         }else if(pacienteJSON=='doctor'){  
             sidebarOptions += `  
-                <a href="{{ url_for('ver_cita') }}" target="_top"><i class="fas fa-calendar-alt" style="font-size: 20px;"></i> <span style="font-size: 20px;">Ver Citas</span></a>  
+                <a href="{{ url_for('citas') }}" target="_top"><i class="fas fa-calendar-alt" style="font-size: 20px;"></i> <span style="font-size: 20px;">Ver Citas</span></a>  
+         <div class="separator"></div>
                 <a href="{{ url_for('horario') }}" target="_top"><i class="fas fa-clock" style="font-size: 20px;"></i> <span style="font-size: 20px;">Horarios</span></a>  
+        <div class="separator"></div>
                 <a href="#" target="_top"><i class="fas fa-sign-out-alt" style="font-size: 20px;"></i> <span style="font-size: 20px;">Salir</span></a>  
             `;  
         } 
