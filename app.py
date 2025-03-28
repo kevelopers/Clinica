@@ -5,6 +5,7 @@ from controller.models import *  # agregar todos los modelos
 import sqlite3
 import random
 import google.generativeai as genai
+
 # AIzaSyCe6pkxFP_IpEhmYpSs20Rhq6L92DUw6Cw  ,clave api
 app = Flask(__name__)
 CORS(app)
@@ -12,10 +13,14 @@ CORS(app)
 initialize_database()
 print("Database initialized")
 
-genai.configure(api_key="AIzaSyCe6pkxFP_IpEhmYpSs20Rhq6L92DUw6Cw") # Reemplaza con tu clave API
+genai.configure(
+    api_key="AIzaSyCe6pkxFP_IpEhmYpSs20Rhq6L92DUw6Cw"
+)  # Reemplaza con tu clave API
 
 # Especifica el modelo beta que quieres usar
-model = genai.GenerativeModel('models/gemini-2.0-flash') # o 'models/gemini-pro:beta' u otro modelo beta que desees usar
+model = genai.GenerativeModel(
+    "models/gemini-2.0-flash"
+)  # o 'models/gemini-pro:beta' u otro modelo beta que desees usar
 
 
 # Ruta principal (página de inicio)
@@ -125,10 +130,11 @@ def obtener_historial(id):
         return {"error": str(e)}, 500
 
 
-@app.route("/registro_doctor", methods=["POST"])
+@app.route("/crear_doctor", methods=["POST"])
 def doctor():
     try:
         data = request.get_json()
+        print(data)
         nombre = data["nombre"]
         nacimiento = data["nacimiento"]
         sexo = data["sexo"]
@@ -143,8 +149,20 @@ def doctor():
 
         doctor = Doctor(nombre, nacimiento, sexo, cedula, carnet, especialidades, clave)
         doctor.save()
+        # Crear el usuario
+        # numero random
+        id_doctor = str(random.randint(100000, 999999))
+        print(id_doctor)
+        user = User(
+            username=nombre,
+            password=clave,
+            role="doctor",
+            id_doctor=id_doctor,
+            id_paciente=0,
+        )
         return {"message": "Doctor creado exitosamente"}, 201
     except Exception as e:
+        print(e)
         return {"error": str(e)}, 500
 
 
@@ -170,7 +188,15 @@ def paciente():
 
         if clave != confirmar_clave:
             return {"error": "Las claves no coinciden"}, 400
-        user = User(username=usuario, password=clave, role="paciente")
+        # numero random
+        id_paciente = str(random.randint(100000, 999999))
+        user = User(
+            username=usuario,
+            password=clave,
+            role="paciente",
+            id_paciente=id_paciente,
+            id_doctor=0,
+        )
         user.save()
         id = User.find_id_by_username(usuario)
 

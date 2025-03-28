@@ -194,6 +194,8 @@
 
      // Enviar el formulario como JSON al endpoint /crear_cita
      document.getElementById('btnRegistrar').addEventListener('click', async () => {
+        event.preventDefault(); // Evita que el formulario se envíe y recargue la página
+
             const nombre = document.getElementById('nombre').value;
             const nacimiento = document.getElementById('nacimiento').value;
             const sexo = document.getElementById('sexo').value;
@@ -215,16 +217,18 @@
             };
 
             try {
-                const response = await fetch('http://127.0.0.1:5000/registro_doctor', {
+                const response = await fetch('http://127.0.0.1:5000/crear_doctor', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(data)
                 });
-
-                if (response.ok) {
+                console.log("Datos enviados:", data);
+                console.log("Respuesta:", response);
+                if (response) {
                     const result = await response.json();
+                    console.log("Resultado:", result);
                     //alert(result.message || 'Registro Doctor');
                     mensajeRegistro.textContent = 'Registro Exitoso.';
                 } else {
@@ -233,7 +237,7 @@
                 }
             } catch (err) {
                 console.error(err);
-                alert('Error al conectar con el servidor');
+                //alert('Error al conectar con el servidor');
             }
         });
 </script>

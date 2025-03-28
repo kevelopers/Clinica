@@ -239,7 +239,7 @@ class User:
             cursor.execute(
                 """
                 INSERT INTO users (username, password, role, id_paciente, id_doctor)
-                VALUES (?, ?, ?)
+                VALUES (?, ?, ?, ?, ?)
             """,
                 (
                     self.username,
