@@ -4,14 +4,22 @@ from controller.database import initialize_database
 from controller.models import *  # agregar todos los modelos
 import sqlite3
 import random
-
+import google.generativeai as genai
+# AIzaSyCe6pkxFP_IpEhmYpSs20Rhq6L92DUw6Cw  ,clave api
 app = Flask(__name__)
 CORS(app)
 
 initialize_database()
 print("Database initialized")
 
+genai.configure(api_key="AIzaSyCe6pkxFP_IpEhmYpSs20Rhq6L92DUw6Cw") # Reemplaza con tu clave API
 
+# Especifica el modelo beta que quieres usar
+model = genai.GenerativeModel('models/gemini-2.0-flash') # o 'models/gemini-pro:beta' u otro modelo beta que desees usar
+
+# Ejemplo de uso
+response = model.generate_content("Explica cómo funciona la IA")
+print(response.text)
 # Ruta principal (página de inicio)
 @app.route("/")
 def index():
@@ -260,6 +268,21 @@ def list_citas(doctor_id):
         return {"citas": citas}, 200
     except Exception as e:
         return {"error": str(e)}, 500
+
+
+@app.route("/pregunta", methods=["GET", "POST"])
+def pregunta():
+    if request.method == "POST":
+        try:
+            data = request.get_json()
+            pregunta_usuario = data["pregunta"]
+            respuesta = model.generate_content(pregunta_usuario)
+            return {"respuesta": respuesta.text}, 200
+        except KeyError as e:
+            return {"error": f"Falta el campo requerido: {str(e)}"}, 400
+        except Exception as e:
+            return {"error": str(e)}, 500
+    return render_template("user/pregunta.html")
 
 
 def generar_nro_carnet():
