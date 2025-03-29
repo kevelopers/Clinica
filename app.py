@@ -35,4 +35,4 @@ for _, module_name, _ in pkgutil.iter_modules(["routes"]):
         print(f"Module {module_name} does not have a 'bp' attribute and was skipped.")
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=5000)

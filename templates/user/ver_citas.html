@@ -113,15 +113,19 @@
                     </p>
                     <ul id="cedula">
                       Cedula:
+                      <span id="modalCedula"></span>
                     </ul>
                     <ul id="fecha_c">
                       Fecha Consulta:
+                      <span id="modalFechaConsulta"></span>
                     </ul>
                     <ul id="celular">
                       Celular:
+                      <span id="modalCelular"></span>
                     </ul>
                     <ul id="direccion">
                       Direccion:
+                      <span id="modalDireccion"></span>
                     </ul>
                     <p><strong>Historial:</strong></p>
                     <ul id="modalHistorial"></ul>
@@ -196,7 +200,11 @@
                     >
                       Cerrar
                     </button>
-                    <button type="button" class="btn btn-primary">
+                    <button
+                      type="button"
+                      id="guardarHistorial"
+                      class="btn btn-primary"
+                    >
                       Guardar Historial
                     </button>
                   </div>
@@ -240,6 +248,7 @@
               pacienteLink.setAttribute("data-bs-target", "#pacienteModal");
               pacienteLink.setAttribute("data-nombre", cita.paciente_nombre);
               pacienteLink.setAttribute("data-id", cita.patient_id);
+              pacienteLink.setAttribute("data-fecha", cita.fecha);
               pacienteLink.setAttribute(
                 "data-historial",
                 "Historial del paciente"
@@ -271,16 +280,96 @@
         .getElementById("pacienteModal")
         .addEventListener("show.bs.modal", function () {
           document.querySelectorAll(".open-modal").forEach((link) => {
-            link.addEventListener("click", function () {
+            link.addEventListener("click", async function () {
               const patientId = this.getAttribute("data-id"); // Obtiene el valor de data-id
+              localStorage.setItem("pacienteId", patientId); // Guardar el ID en localStorage
               // Llamar a una función para cargar el historial del paciente
-              const historial = cargarHistorial(patientId);
+              const historial = await cargarHistorial(patientId);
+              const nombre = this.getAttribute("data-nombre");
+              const fecha = this.getAttribute("data-fecha");
+              const paciente = await cargarPaciente(patientId);
+              console.log("Paciente:", paciente);
+
+              // Mostrar los datos en el modal
+              document.getElementById("modalNombre").textContent = nombre;
+              document.getElementById("modalFechaConsulta").textContent = fecha; // Asignar la fecha al modal
+              document.getElementById("modalCedula").textContent =
+                paciente.identificacion_tipo + paciente.identificacion_numero; // Asignar la cédula al modal
+              document.getElementById("modalCelular").textContent =
+                paciente.telefono; // Asignar el celular al modal
+              document.getElementById("modalDireccion").textContent =
+                paciente.direccion; // Asignar la dirección al modal
+
+              //ciclo para cargar el historial
+              const historialElement =
+                document.getElementById("modalHistorial");
+              historialElement.innerHTML = ""; // Limpiar el contenido existente
+              historial
+                .slice()
+                .reverse()
+                .forEach((item) => {
+                  const li = document.createElement("li");
+                  li.textContent = item.diagnostico; // Cambia esto según la estructura de tu historial
+                  historialElement.appendChild(li);
+                });
             });
           });
         });
 
+      document
+        .getElementById("guardarHistorial")
+        .addEventListener("click", async (e) => {
+          event.preventDefault();
+          const informe = document.getElementById("informe").value;
+          const pacienteId = localStorage.getItem("pacienteId");
+          const response = await fetch(
+            `http://127.0.0.1:5000/historial/crear`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                paciente_id: pacienteId,
+                doctor_id: localStorage.getItem("id"),
+                informe: informe,
+              }),
+            }
+          );
+
+          if (response.status == 201) {
+            const data = await response.json();
+            console.log("Historial guardado:", data);
+            // Cerrar el modal
+            const historialModal = bootstrap.Modal.getInstance(
+              document.getElementById("historialModal")
+            );
+            //limpiar el modal
+            document.getElementById("informe").value = "";
+            historialModal.hide();
+          } else {
+            console.error("Error al guardar el historial");
+          }
+        });
       // Llamar a la función para cargar las citas al cargar la página
       cargarCitas();
+
+      // cargar paciente
+      async function cargarPaciente(pacienteId) {
+        try {
+          const response = await fetch(
+            `http://127.0.0.1:5000/paciente/${pacienteId}`
+          ); // Replace with your actual API endpoint
+          if (response.ok) {
+            const data = await response.json();
+            return data.paciente;
+          } else {
+            console.error("Error al cargar el paciente");
+          }
+        } catch (err) {
+          console.error("Error al conectar con el servidor:", err);
+        }
+      }
 
       //llamar al historial de citas
       async function cargarHistorial(pacienteId) {
@@ -292,6 +381,7 @@
             const data = await response.json();
             console.log("Historial cargado:", data);
             // Aquí puedes procesar el historial recibido
+            return data; // Asegúrate de que el formato sea correcto
           } else {
             console.error("Error al cargar el historial");
           }

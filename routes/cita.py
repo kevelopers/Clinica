@@ -1,5 +1,6 @@
 from flask import Blueprint, request, render_template
 from models import Cita, Doctor, Paciente
+from datetime import datetime
 
 # Define the blueprint
 bp = Blueprint("cita", __name__, url_prefix="/cita")
@@ -19,6 +20,9 @@ def crear():
         patient_id = data["patient_id"]
         fecha = data["fecha"]
         motivo = data["motivo"]
+        print(
+            f"Creando cita para el doctor {doctor_id} y el paciente {patient_id} en la fecha {fecha}"
+        )
 
         # Validar que el doctor exista
         doctor = Doctor.find_by_id(doctor_id)
@@ -29,6 +33,23 @@ def crear():
         patient = Paciente.find_by_id(patient_id)
         if not patient:
             return {"error": "El paciente no existe"}, 404
+
+        # Validar que la fecha no esté ocupada
+        citas = Cita.list_by_doctor(doctor_id)
+        for cita in citas:
+            # Convertir las fechas de string a objetos datetime
+            fecha_cita = datetime.strptime(cita["fecha"], "%Y-%m-%dT%H:%M")
+            fecha_nueva = datetime.strptime(fecha, "%Y-%m-%dT%H:%M")
+            print(f"Comparando {fecha_nueva} con {fecha_cita}")
+
+            # Calcular la diferencia en horas
+            diferencia = abs((fecha_nueva - fecha_cita).total_seconds() / 3600)
+            print(f"Comparando {fecha} con {cita['fecha']}: {diferencia} horas")
+            if diferencia < 1:
+                return {
+                    "error": "El doctor ya tiene una cita programada en un horario cercano"
+                }, 400
+        # Guardar la cita
 
         cita = Cita(doctor_id, patient_id, fecha, 0, motivo)
         cita.save()

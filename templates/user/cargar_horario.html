@@ -227,7 +227,7 @@
   </body>
 
   <script>
-    function boton() {
+    async function boton() {
       const day = document.getElementById("dias").value;
       const h_entrada = document.getElementById("h_entrada").value;
       const h_salida = document.getElementById("h_salida").value;
@@ -263,6 +263,37 @@
         };
         actionCell.appendChild(editButton);
 
+        //guardar horarios en el servidor
+        var id = localStorage.getItem("id");
+        console.log(id);
+        console.log(h_entrada);
+        console.log(h_salida);
+        try {
+          const response = await fetch(
+            `http://127.0.0.1:5000/horario/guardar`,
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                dia: day,
+                hora_inicio: h_entrada,
+                hora_fin: h_salida,
+                doctor_id: id,
+              }),
+            }
+          ); // Replace with your actual API endpoint
+          if (response.status == 201) {
+            const data = await response.json();
+            return data; // Asegúrate de que el formato sea correcto
+          } else {
+            console.error("Error al cargar el historial");
+          }
+        } catch (err) {
+          console.error("Error al conectar con el servidor:", err);
+        }
+
         document.getElementById("dias").value = "";
         document.getElementById("h_entrada").value = "";
         document.getElementById("h_salida").value = "";
@@ -283,5 +314,48 @@
 
       row.parentNode.removeChild(row);
     }
+    async function cargarHorarios() {
+      try {
+        var id = localStorage.getItem("id");
+        // Realiza el fetch al endpoint para obtener los horarios
+        const response = await fetch(`http://127.0.0.1:5000/horario/${id}`); // Cambia '/api/horarios' por tu endpoint real
+        if (response.ok) {
+          const data = await response.json();
+          console.log("Horarios:", data);
+          const table = document
+            .getElementById("table")
+            .getElementsByTagName("tbody")[0];
+
+          // Limpiar el contenido existente en la tabla
+          table.innerHTML = "";
+
+          // Iterar sobre los datos y llenar la tabla
+          data.horarios.forEach((horario) => {
+            const newRow = table.insertRow();
+            const dayCell = newRow.insertCell(0);
+            const timeCell = newRow.insertCell(1);
+            const actionCell = newRow.insertCell(2);
+
+            dayCell.innerText = horario.dia;
+            timeCell.innerText = `${horario.hora_inicio} - ${horario.hora_fin}`;
+            timeCell.className = "reserved";
+
+            const editButton = document.createElement("button");
+            editButton.innerText = "Editar";
+            editButton.onclick = function () {
+              tabla(newRow);
+            };
+            actionCell.appendChild(editButton);
+          });
+        } else {
+          console.error("Error al cargar los horarios");
+        }
+      } catch (err) {
+        console.error("Error al conectar con el servidor:", err);
+      }
+    }
+
+    // Llamar a la función cargarHorarios al cargar la página
+    document.addEventListener("DOMContentLoaded", cargarHorarios);
   </script>
 </html>

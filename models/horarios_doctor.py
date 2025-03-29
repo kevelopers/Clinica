@@ -31,11 +31,17 @@ class HorariosDoctor:
         with sqlite3.connect("database.db") as conn:
             cursor = conn.cursor()
             cursor.execute(
-                "SELECT dia, hora_inicio, hora_fin FROM horarios_doctor WHERE doctor_id = ?",
+                "SELECT id, dia, hora_inicio, hora_fin FROM horarios_doctor WHERE doctor_id = ?",
                 (doctor_id,),
             )
             rows = cursor.fetchall()
             return [
-                {"dia": row[0], "hora_inicio": row[1], "hora_fin": row[2]}
+                {"id": row[0], "dia": row[1], "hora_inicio": row[2], "hora_fin": row[3]}
                 for row in rows
             ]
+
+    def delete(id):
+        with sqlite3.connect("database.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM horarios_doctor WHERE id = ?", (id,))
+            conn.commit()

@@ -144,16 +144,23 @@ def initialize_database():
         """
     CREATE TABLE IF NOT EXISTS historial_citas (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        id_cita INTEGER NOT NULL,
         id_paciente INTEGER NOT NULL,
         id_doctor INTEGER NOT NULL,
         diagnostico TEXT NOT NULL,
-        FOREIGN KEY (id_cita) REFERENCES citas(id),
         FOREIGN KEY (id_paciente) REFERENCES patients(id),
         FOREIGN KEY (id_doctor) REFERENCES doctores(id)
     );
     """
     )
+    # insertar historial de citas por defecto si no existe
+    cursor.execute(
+        """
+    INSERT INTO historial_citas (id_paciente, id_doctor, diagnostico)
+    SELECT 1, 1,'Diagnóstico inicial'
+    WHERE NOT EXISTS (SELECT 1 FROM historial_citas WHERE id_paciente = 1 AND id_doctor = 1);
+    """
+    )
+
     # Insertar usuarios por defecto con contraseñas encriptadas si no existen
     default_users = [
         ("admin", "admin", "doctor", 1, 1),
@@ -187,7 +194,6 @@ def initialize_database():
     )
     # Insertar un horario por defecto para el doctor por defecto si no existe
     default_schedule = [
-        ("lunes", "08:00", "16:00"),
         ("martes", "08:00", "16:00"),
         ("miércoles", "08:00", "16:00"),
         ("jueves", "08:00", "16:00"),
@@ -219,18 +225,18 @@ def initialize_database():
     cursor.execute(
         """
     INSERT INTO citas (doctor_id, patient_id, fecha, motivo, atendida)
-    SELECT 1, 1, '2025-03-26', 'Consulta inicial', 0
+    SELECT 1, 1, '2025-03-29T14:30', 'Consulta inicial', 0
     WHERE NOT EXISTS (
-        SELECT 1 FROM citas WHERE doctor_id = 1 AND patient_id = 1 AND fecha = '2025-03-26'
+        SELECT 1 FROM citas WHERE doctor_id = 1 AND patient_id = 1 AND fecha = '2025-03-29T14:30'
     );
     """
     )
     # Insertar un historial de citas por defecto para el paciente por defecto si no existe
     cursor.execute(
         """
-    INSERT INTO historial_citas (id_cita, id_paciente, id_doctor, diagnostico)
-    SELECT 1, 1, 1, 'Diagnóstico inicial'
-    WHERE NOT EXISTS (SELECT 1 FROM historial_citas WHERE id_cita = 1 AND id_paciente = 1 AND id_doctor = 1);
+    INSERT INTO historial_citas (id_paciente, id_doctor, diagnostico)
+    SELECT 1, 1, 'Diagnóstico inicial'
+    WHERE NOT EXISTS (SELECT 1 FROM historial_citas WHERE id_paciente = 1 AND id_doctor = 1);
     """
     )
     # Guardar los cambios en la base de datos
