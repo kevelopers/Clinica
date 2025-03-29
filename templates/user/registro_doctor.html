@@ -208,6 +208,7 @@
             const sexo = document.getElementById('sexo').value;
             const cedula = document.getElementById('cedula').value;
             const especialidad = document.getElementById('especialidad').value;
+            const usuario = document.getElementById('usuario').value;
             const clave = document.getElementById('clave').value;
             const confirmar_clave = document.getElementById('confirmar_clave').value;
             let mensajeRegistro = document.getElementById('mensajeRegistro');
@@ -218,6 +219,7 @@
                 sexo: sexo,
                 cedula: cedula,
                 especialidad: especialidad,
+                usuario: usuario,
                 clave: clave,
                 confirmar_clave: confirmar_clave
 
@@ -235,7 +237,6 @@
                 console.log("Respuesta:", response);
                 if (response.status === 201) {
                     const result = await response.json();
-                    console.log("Resultado:", result);
                     //alert(result.message || 'Registro Doctor');
                     mensajeRegistro.textContent = 'Registro Exitoso.';
                 } else {
