@@ -18,10 +18,10 @@
       .fondo-delineado {
         margin: 0;
         height: 100vh;
-        background-image: url('{{ url_for('static', filename='img/fondo_clinica.jpg') }}');
-  background-size: cover; /* Asegura que la imagen cubra todo el fondo */
-  background-position: center; /* Centra la imagen */
-  display: flex; /* Usamos flexbox para el diseño */
+        background-image: url("{{ url_for("static", filename="img/fondo_clinica.jpg") }}");
+        background-size: cover; /* Asegura que la imagen cubra todo el fondo */
+        background-position: center; /* Centra la imagen */
+        display: flex; /* Usamos flexbox para el diseño */
         /* Usamos flexbox para el diseño */
       }
 
@@ -44,11 +44,11 @@
   </head>
 
   <body class="fondo-delineado">
-    <iframe id="sidebarFrame" src="{{ url_for('menulateral') }}"></iframe>
+    <iframe id="sidebarFrame" src="{{ url_for('menu') }}"></iframe>
     <div class="main-content">
-      <div class="container" style="margin-left: 50px;">
+      <div class="container" style="margin-left: 50px">
         <br /><br /><br />
-        <div class="row ">
+        <div class="row">
           <div
             class="col-md-10 col-lg-10"
             style="
@@ -101,7 +101,6 @@
                 <button type="button" class="btn btn-primary" id="submitButton">
                   Agendar Consulta
                 </button>
-       
               </div>
               <br />
             </form>
@@ -130,7 +129,9 @@
       async function cargarUsuario() {
         try {
           id = localStorage.getItem("id");
-          const response = await fetch(`http://127.0.0.1:5000/paciente/${id}`);
+          const response = await fetch(
+            `{{ url_for('paciente.obtener', id=0).rsplit('/', 1)[0] }}/${id}`
+          );
           if (response.ok) {
             const data = await response.json();
             console.log("Datos del usuario:", data);
@@ -145,9 +146,10 @@
       // obtener datos del doctor
       async function cargarDoctor(doctorId) {
         try {
-          const response = await fetch(
-            `http://127.0.0.1:5000/doctor/${doctorId}`
-          );
+          const baseUrl =
+            "{{ url_for('doctor.obtener', id=0).rsplit('/', 1)[0] }}";
+          const url = `${baseUrl}/${doctorId}`;
+          const response = await fetch(url);
           if (response.ok) {
             const data = await response.json();
             return data.doctor;
@@ -175,7 +177,7 @@
       // Cargar la lista de doctores dinámicamente
       async function cargarDoctores() {
         try {
-          const response = await fetch("http://127.0.0.1:5000/doctores"); // Cambia la URL si es necesario
+          const response = await fetch(`{{ url_for('doctor.list') }}`); // Cambia la URL si es necesario
           if (response.ok) {
             const data = await response.json();
             const doctorSelect = document.getElementById("doctor");
@@ -218,7 +220,7 @@
           const fecha = document.getElementById("fechaHora").value;
           const motivo = document.getElementById("motivo").value;
           const doctorId = document.getElementById("doctor").value;
-          const pacienteId = document.getElementById("paciente").value;
+          const pacienteId = localStorage.getItem("id");
 
           const data = {
             doctor_id: doctorId,
@@ -228,7 +230,7 @@
           };
 
           try {
-            const response = await fetch("http://127.0.0.1:5000/crear_cita", {
+            const response = await fetch(`{{ url_for('cita.crear')}}`, {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",

@@ -13,8 +13,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-   
-    <link rel="shortcut icon" href="../../static/img/logoClin.png" style="width: 50px;" type="image/x-icon">
+
+    <link
+      rel="shortcut icon"
+      href="../../static/img/logoClin.png"
+      style="width: 50px"
+      type="image/x-icon"
+    />
     <!-- Referencia a Bootstrap CSS -->
     <link
       rel="stylesheet"
@@ -31,11 +36,10 @@
   <body class="fondo-delineado">
     <!-- Container Justificado al centro -->
     <br />
-   
+
     <div
       class="container full-page d-flex justify-content-center align-items-cente"
     >
-   
       <!-- Columna de 8 de ancho y 6 de largo -->
       <div
         class="col-md-8 col-lg-6"
@@ -89,7 +93,7 @@
           <br />
           <div style="text-align: center">
             <p>
-              ¿No te has registrado?<a href="{{ url_for('perfil') }}">
+              ¿No te has registrado?<a href="{{ url_for('auth.registrar') }}">
                 <b>Registrate</b></a
               >
             </p>
@@ -110,7 +114,7 @@
         const password = document.getElementById("clave").value;
 
         try {
-          const response = await fetch("{{ url_for('login') }}", {
+          const response = await fetch("{{ url_for('auth.login') }}", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
@@ -126,10 +130,10 @@
               console.log("Usuario:", data);
               if (data.role == "doctor") {
                 localStorage.setItem("id", data.id);
-                window.location.href = "{{ url_for('citas') }}";
+                window.location.href = "{{ url_for('doctor.index') }}";
               } else if (data.role == "paciente") {
                 localStorage.setItem("id", data.id);
-                window.location.href = "{{ url_for('crear_citas') }}";
+                window.location.href = "{{ url_for('paciente.index') }}";
               } else {
                 alert("Rol no reconocido");
               }

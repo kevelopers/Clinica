@@ -17,13 +17,18 @@
       position: relative;
     }
     .mensajeRegistro {
-    color: green;
-    display: block; /* Asegúrate de que esté visible */
-}
+      color: green;
+      display: block; /* Asegúrate de que esté visible */
+    }
   </style>
 
   <head>
-    <link rel="shortcut icon" href="../../static/img/logoClin.png" style="width: 50px;" type="image/x-icon">
+    <link
+      rel="shortcut icon"
+      href="../../static/img/logoClin.png"
+      style="width: 50px"
+      type="image/x-icon"
+    />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <!-- Referencia a Bootstrap CSS -->
@@ -230,12 +235,16 @@
                 id="mensajeError"
                 class="mensajeError"
               ></div>
-              <div style="color: green;" id="mensajeRegistro" class="mensajeRegistro"></div>
+              <div
+                style="color: green"
+                id="mensajeRegistro"
+                class="mensajeRegistro"
+              ></div>
             </div>
             <br />
             <div style="text-align: center">
               <p>
-                ¿Ya estas Registrado?<a href="{{ url_for('login') }}">
+                ¿Ya estas Registrado?<a href="{{ url_for('index') }}">
                   <b>Iniciar Sesión</b></a
                 >
               </p>
@@ -275,7 +284,6 @@
             document.getElementById("sexo_hijo")?.value || "N/A"; // Sexo del hijo
           const patologia =
             document.getElementById("patologia")?.value || "Ninguna"; // Campo de patología
-          
 
           if (clave !== confirmar_clave) {
             document.getElementById("mensajeError").textContent =
@@ -318,18 +326,17 @@
           };
 
           try {
-            const response = await fetch("{{ url_for('paciente') }}", {
+            const response = await fetch("{{ url_for('paciente.crear') }}", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
               },
               body: JSON.stringify(pacienteData),
             });
-            let mensajeRegistro = document.getElementById('mensajeRegistro');
+            let mensajeRegistro = document.getElementById("mensajeRegistro");
             if (response.ok) {
               const data = await response.json();
               if (data.message) {
-        
                 mostrarMensaje(data.message);
                 window.location.replace("/");
               } else {
@@ -344,11 +351,11 @@
           }
         });
 
-        function mostrarMensaje(mensaje) {
-    const mensajeRegistro = document.getElementById('mensajeRegistro');
-    mensajeRegistro.textContent = mensaje;
-    mensajeRegistro.style.color = 'green'; // Opcional: Cambia el color del texto
-}
+      function mostrarMensaje(mensaje) {
+        const mensajeRegistro = document.getElementById("mensajeRegistro");
+        mensajeRegistro.textContent = mensaje;
+        mensajeRegistro.style.color = "green"; // Opcional: Cambia el color del texto
+      }
     </script>
   </body>
 </html>
