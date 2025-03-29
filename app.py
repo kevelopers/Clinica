@@ -141,6 +141,7 @@ def doctor():
         cedula = data["cedula"]
         carnet = generar_nro_carnet()
         especialidades = [data["especialidad"]]
+        usuario = data["usuario"]
         clave = data["clave"]
         confirmar_clave = data["confirmar_clave"]
 
@@ -154,12 +155,13 @@ def doctor():
         id_doctor = str(random.randint(100000, 999999))
         print(id_doctor)
         user = User(
-            username=nombre,
+            username=usuario,
             password=clave,
             role="doctor",
             id_doctor=id_doctor,
             id_paciente=0,
         )
+        user.save()
         return {"message": "Doctor creado exitosamente"}, 201
     except Exception as e:
         print(e)
