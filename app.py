@@ -24,11 +24,13 @@ def menu():
     return render_template("user/menulateral.html")
 
 
-# Dynamically import all modules in the 'routes' package
+#Importar todos los módulos de la carpeta routes y registrarlos como blueprints
+# Esto permite que cada módulo en la carpeta routes sea un blueprint
 for _, module_name, _ in pkgutil.iter_modules(["routes"]):
     module = importlib.import_module(f"routes.{module_name}")
     try:
-        # Register the module as a blueprint by default
+        # Cada módulo debe tener un objeto 'bp' que sea un Blueprint de Flask
+        # y se registrará en la aplicación principal
         app.register_blueprint(module.bp)
         print(f"Registered blueprint: {module_name}")
     except AttributeError:
