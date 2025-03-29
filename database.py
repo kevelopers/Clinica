@@ -239,6 +239,32 @@ def initialize_database():
     WHERE NOT EXISTS (SELECT 1 FROM historial_citas WHERE id_paciente = 1 AND id_doctor = 1);
     """
     )
+    # Crear la tabla de calificación de doctores (si no existe)
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS calificacion_doctor (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            doctor_id INTEGER NOT NULL,
+            comentario TEXT NOT NULL,
+            calificacion INTEGER NOT NULL CHECK(calificacion BETWEEN 1 AND 5),
+            FOREIGN KEY (doctor_id) REFERENCES doctores(id)
+        );
+        """
+    )
+    # Insertar calificaciones por defecto para el doctor con id 1 si no existen
+    default_ratings = [5, 4, 3]
+
+    for calificacion in default_ratings:
+        cursor.execute(
+            """
+        INSERT INTO calificacion_doctor (doctor_id, comentario, calificacion)
+        SELECT 1, 'Comentario por defecto', ?
+        WHERE NOT EXISTS (
+            SELECT 1 FROM calificacion_doctor WHERE doctor_id = 1 AND calificacion = ?
+        );
+        """,
+            (calificacion, calificacion),
+        )
     # Guardar los cambios en la base de datos
     conn.commit()
 

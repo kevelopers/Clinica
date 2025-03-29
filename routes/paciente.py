@@ -1,5 +1,5 @@
 from flask import Blueprint, request, render_template
-from models import Paciente, User
+from models import Paciente, User, Cita
 
 # Define the blueprint
 bp = Blueprint("paciente", __name__, url_prefix="/paciente")
@@ -33,6 +33,18 @@ def obtener(id):
         if not paciente:
             return {"error": "Paciente no encontrado"}, 404
         return {"paciente": pacienteJson}, 200
+    except Exception as e:
+        return {"error": str(e)}, 500
+
+
+@bp.route("/<int:id>/list/doctores", methods=["GET"])
+def list(id):
+    try:
+        doctores = Cita.get_doctors_by_patient(id)
+        print(doctores)
+        if not doctores:
+            return {"error": "No hay doctores que hayan atendido a este paciente"}, 404
+        return {"doctores": doctores}, 200
     except Exception as e:
         return {"error": str(e)}, 500
 

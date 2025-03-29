@@ -132,6 +132,67 @@
             });
         });
     });
+    async function obtenerDoctores() {
+        try {
+            const id = localStorage.getItem('id');
+            const response = await fetch(`http://127.0.0.1:5000/paciente/${id}/list/doctores`); // Cambia la URL según tu endpoint
+            if (!response.ok) {
+                throw new Error('Error al obtener la lista de doctores');
+            }
+            const data = await response.json();
+            const doctorSelect = document.getElementById('doctor');
+            data.doctores.forEach(doctor => {
+                console.log(doctor);
+                const option = document.createElement('option');
+                option.value = doctor.id;
+                option.textContent = doctor.nombre;
+                doctorSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    document.getElementById('btn-enviar').addEventListener('click', async (event) => {
+        event.preventDefault();
+
+        const doctorId = document.getElementById('doctor').value;
+        const rating = document.getElementById('rating-value').value;
+        const comentario = "comentario"; // Aquí puedes agregar un campo de comentario si lo deseas
+
+        if (!doctorId || !rating) {
+            alert('Por favor, complete todos los campos antes de enviar.');
+            return;
+        }
+
+        try {
+            const id = localStorage.getItem('id');
+            const response = await fetch(`http://127.0.0.1:5000/calificacion/guardar`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    doctor_id: doctorId,
+                    rating: rating,
+                    comentario: comentario,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Error al guardar la valoración');
+            }
+
+            const result = await response.json();
+            console.log(result);
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Hubo un error al enviar la valoración');
+        }
+    });
+    document.addEventListener('DOMContentLoaded', () => {
+        obtenerDoctores();
+    });
 </script>
   <!-- Referencia a Bootstrap JS -->
   <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>

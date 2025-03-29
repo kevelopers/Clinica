@@ -26,6 +26,23 @@ class Cita:
                 ),
             )
             conn.commit()
+    
+    #obtener todas los doctores que tienen citas con un paciente
+    @staticmethod
+    def get_doctors_by_patient(patient_id):
+        with sqlite3.connect("database.db") as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                """
+                SELECT DISTINCT doctores.id, doctores.nombre
+                FROM citas
+                JOIN doctores ON citas.doctor_id = doctores.id
+                WHERE citas.patient_id = ?
+                """,
+                (patient_id,),
+            )
+            rows = cursor.fetchall()
+            return [{"id": row[0], "nombre": row[1]} for row in rows]
 
     def mark_as_attended(appointment_id):
         with sqlite3.connect("database.db") as conn:
