@@ -50,6 +50,17 @@
         justify-content: center;
         align-items: center;
       }
+
+      #rating .star {
+        color: #e4e5e9; /* Empty star color */
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+
+      #rating .star.hovered,
+      #rating .star.selected {
+        color: #ffc107; /* Filled star color */
+      }
 </style>
 
 <head>
@@ -121,17 +132,30 @@
     const stars = document.querySelectorAll('#rating .star');
     const ratingValue = document.getElementById('rating-value');
 
-    stars.forEach(star => {
+    stars.forEach((star, index) => {
+        star.addEventListener('mouseover', () => {
+            // Highlight stars up to the hovered one
+            stars.forEach((s, i) => {
+                s.classList.toggle('hovered', i <= index);
+            });
+        });
+
+        star.addEventListener('mouseout', () => {
+            // Remove hover effect
+            stars.forEach(s => s.classList.remove('hovered'));
+        });
+
         star.addEventListener('click', () => {
             const value = star.getAttribute('data-value');
             ratingValue.value = value;
 
-            // Selleccionar todas las estrellas y cambiar su color
-            stars.forEach(s => {
-                s.style.color = s.getAttribute('data-value') <= value ? '#ffc107' : '#e4e5e9';
+            // Set selected stars
+            stars.forEach((s, i) => {
+                s.classList.toggle('selected', i < value);
             });
         });
     });
+
     async function obtenerDoctores() {
         try {
             const id = localStorage.getItem('id');
