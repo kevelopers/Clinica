@@ -154,6 +154,8 @@ def doctor():
         # numero random
         id_doctor = str(random.randint(100000, 999999))
         print(id_doctor)
+        print(usuario)
+        print(clave)
         user = User(
             username=usuario,
             password=clave,
@@ -269,6 +271,7 @@ def login():
         username = data["username"]
         password = data["password"]
         user = User.find_by_username(username)
+        print(user.check_password(password))
         if user is None or not user.check_password(password):
             return {"error": "Usuario o clave incorrecta"}, 401
         print(user.role)
