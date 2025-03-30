@@ -167,6 +167,14 @@
             allowClear: true,
             multiple: true // Agrega la opción multiple: true
         });
+        selectEspecialidad.on('select2:select', function (e) {
+            const data = e.params.data;
+            console.log("Seleccionado:", data);
+        });
+        selectEspecialidad.on('select2:unselect', function (e) {
+            const data = e.params.data;
+            console.log("Desmarcado:", data);
+        });
     });
     document.getElementById('formulario').addEventListener('submit', function (event) {
         const fechaNacimiento = document.getElementById('nacimiento').value;
@@ -206,11 +214,13 @@
      document.getElementById('btnRegistrar').addEventListener('click', async () => {
         event.preventDefault(); // Evita que el formulario se envíe y recargue la página
 
+            const selectEspecialidad = $('#especialidad');
             const nombre = document.getElementById('nombre').value;
             const nacimiento = document.getElementById('nacimiento').value;
             const sexo = document.getElementById('sexo').value;
             const cedula = document.getElementById('cedula').value;
-            const especialidad = document.getElementById('especialidad').value;
+            const especialidad = selectEspecialidad.val();
+            const especialidadString = especialidad.join(', '); // Convierte el array a una cadena
             const usuario = document.getElementById('usuario').value;
             const clave = document.getElementById('clave').value;
             const confirmar_clave = document.getElementById('confirmar_clave').value;
@@ -221,7 +231,7 @@
                 nacimiento: nacimiento,
                 sexo: sexo,
                 cedula: cedula,
-                especialidad: especialidad,
+                especialidad: especialidadString,
                 usuario: usuario,
                 clave: clave,
                 confirmar_clave: confirmar_clave

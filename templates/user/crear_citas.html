@@ -105,97 +105,37 @@
     <script>
         $(document).ready(function () {
             const motivos = [
-                "Reacción alérgica",  
-                "Asma alérgica",  
-                "Rinitis alérgica",  
-                "Consulta preoperatoria",  
-                "Manejo del dolor crónico",  
-                "Evaluación para anestesia",  
-                "Dolor en el pecho",  
-                "Fatiga excesiva",  
-                "Control de hipertensión",  
-                "Dolor abdominal persistente",  
-                "Sospecha de apendicitis",  
-                "Necesidad de cirugía electiva",  
-                "Problemas en la piel (erupciones, eccemas)",  
-                "Acné severo",  
-                "Lunares sospechosos",  
-                "Problemas hormonales",  
-                "Diabetes",  
-                "Hipotirodismo o hipertiroidismo",  
-                "Dolores abdominales",  
-                "Problemas digestivos crónicos",  
-                "Sangrado gastrointestinal",  
-                "Evaluación geriátrica integral",  
-                "Manejo de múltiples condiciones crónicas",  
-                "Control de los medicamentos",  
-                "Control prenatal",  
-                "Problemas menstruales",  
-                "Evaluación de fertilidad",  
-                "Anemia",  
-                "Problemas de coagulación",  
-                "Monitoreo de enfermedades hematológicas",  
-                "Infecciones recurrentes",  
-                "Fiebre inexplicada",  
-                "Evaluación de enfermedades infecciosas",  
-                "Exámenes de rutina",  
-                "Manejo de enfermedades crónicas",  
-                "Vacunaciones",  
-                "Síntomas no diagnosticados",  
-                "Dolor de tórax",  
-                "Enfermedades crónicas",  
-                "Problemas renales",  
-                "Insuficiencia renal",  
-                "Control de enfermedades crónicas",  
-                "Dificultad para respirar",  
-                "Tos persistente",  
-                "Asma o EPOC",  
-                "Dolores de cabeza severos",  
-                "Dificultad para hablar o moverse",  
-                "Evaluación de trastornos neurológicos",  
-                "Problemas de visión",  
-                "Irritación ocular",  
-                "Enfermedades oculares crónicas",  
-                "Evaluación de masas o tumores",  
-                "Seguimiento post-tratamiento",  
-                "Síntomas relacionados con el cáncer",  
-                "Problemas auditivos",  
-                "Dolor de garganta persistente",  
-                "Sinusitis crónica",  
-                "Exámenes de salud infantil",  
-                "Vacunaciones",  
-                "Crecimiento y desarrollo",  
-                "Ansiedad o depresión",  
-                "Trastornos del sueño",  
-                "Crisis emocional",  
-                "Dolor articular",  
-                "Inflamación recurrente",  
-                "Sospecha de enfermedades autoinmunitarias",  
-                "Problemas urinarios",  
-                "Dolor testicular",  
-                "Evaluación de la próstata",  
-                "Interpretación de imágenes médicas",  
-                "Exámenes de diagnóstico por imagen",  
-                "Seguimiento de lesiones previas",  
-                "Lesiones agudas",  
-                "Dolor severo",  
-                "Crisis médicas urgentes",  
-                "Resultados de biopsias",  
-                "Evaluación de muestras de tejidos",  
-                "Diagnósticos Histopatológicos",  
-                "Rehabilitación postoperatoria",  
-                "Manejo de dolor crónico",  
-                "Evaluación de discapacidad",  
-                "Consultas sobre estilos de vida saludables",  
-                "Exámenes preventivos",  
-                "Consejería en salud pública",  
-                "Evaluación de salud ocupacional",  
-                "Diagnóstico de enfermedades laborales",  
-                "Rehabilitación profesional",  
-                "Evaluación de antecedentes familiares",  
-                "Pruebas genéticas",  
-                "Asesoramiento sobre enfermedades hereditarias"
-            ];
+            "Alergología",
+            "Anestesiología",
+            "Cardiología",
+            "Cirugía General",
+            "Dermatología",
+            "Endocrinología",
+            "Gastroenterología",
+            "Geriatría",
+            "Ginecología y Obstetricia",
+            "Hematología",
+            "Infectología",
+            "Medicina Familiar",
+            "Medicina Interna",
+            "Nefrología",
+            "Neumología",
+            "Neurología",
+            "Oftalmología",
+            "Oncología",
+            "Otorrinolaringología",
+            "Pediatría",
+            "Psiquiatría",
+            "Reumatología",
+            "Urología",
+            "Radiología",
+            "Medicina de Emergencia",
+            "Anatomía Patológica",
+            "Medicina Física y Rehabilitación",
+            "Medicina Preventiva y Salud Pública",
+            "Medicina del Trabajo",
+            "Genética Médica"
+        ];
     
             const selectMotivo = $('#motivo');
     
@@ -208,6 +148,51 @@
                 allowClear: true,
                 multiple: true // Agrega la opción multiple: true
             });
+            selectMotivo.on("select2:close", function (e) {
+                const selectedValues = $(this).val();
+                if (selectedValues.length > 0) {
+                  console.log("Valores seleccionados:", selectedValues);
+                    filtrarDoctores(selectedValues);
+                } else {
+                  cargarDoctores();
+                }
+            });
+            function filtrarDoctores(selectedValues) {
+                // Aquí puedes implementar la lógica para filtrar los doctores según los motivos seleccionados
+                console.log("Filtrando doctores por motivos:", selectedValues);
+                try {
+                    const doctores = JSON.parse(localStorage.getItem("doctores"));
+                    const doctorSelect = document.getElementById("doctor");
+        
+                    // Limpiar opciones existentes
+                    doctorSelect.innerHTML = "";
+                    //agregar una por defecto
+                    const optionDefault = document.createElement("option");
+                    optionDefault.value = "";
+                    optionDefault.textContent = "Seleccione un doctor";
+                    optionDefault.disabled = true;
+                    optionDefault.selected = true;
+                    doctorSelect.appendChild(optionDefault);
+        
+                    // Agregar opciones dinámicamente filtradas por especialidad
+                    doctores.forEach((doctor) => {
+                        const doctorMotivos = doctor.especialidad; // Asegúrate de que esta propiedad exista en tu objeto doctor
+                        const tieneMotivo = selectedValues.some((motivo) =>
+                            doctorMotivos.includes(motivo)
+                        );
+                        if (tieneMotivo) {
+                            const option = document.createElement("option");
+                            option.value = doctor.id;
+                            option.textContent = doctor.nombre;
+                            doctorSelect.appendChild(option);
+                        }
+                      
+                    });
+                } catch (err) {
+                  console.error("Error al filtrar doctores:", err);
+                }
+                
+            }
         });
     </script>
     
@@ -283,6 +268,7 @@
           if (response.ok) {
             const data = await response.json();
             const doctorSelect = document.getElementById("doctor");
+            localStorage.setItem("doctores", JSON.stringify(data.doctores));
 
             // Limpiar opciones existentes
             doctorSelect.innerHTML = "";

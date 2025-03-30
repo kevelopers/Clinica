@@ -115,7 +115,7 @@ def initialize_database():
     cursor.execute(
         """
     INSERT INTO doctores (nombre, fecha_nacimiento, sexo, cedula, nro_carnet, clave, especialidad)
-    SELECT 'Doctor Default', '1980-01-01', 'masculino', '12345678', '000001', 'clave123', 'General'
+    SELECT 'Doctor Default', '1980-01-01', 'masculino', '12345678', '000001', 'clave123', 'Alergología, Anestesiología, Cardiología, Cirugía General, Dermatología, Endocrinología, Gastroenterología, Medicina Familiar'
     WHERE NOT EXISTS (SELECT 1 FROM doctores WHERE cedula = '12345678');
     """
     )

@@ -69,6 +69,25 @@ def crear():
         clave = data["clave"]
         confirmar_clave = data["confirmar_clave"]
 
+        # validar que no venga vacio
+        if (
+            not name
+            or not identificacion_tipo
+            or not identificacion_numero
+            or not telefono
+            or not direccion
+            or not descendencia
+            or not nombre_hijo
+            or not fecha_nacimiento_hijo
+            or not sexo_hijo
+            or not fecha_nacimiento
+            or not sexo
+            or not patologia
+            or not usuario
+            or not clave
+        ):
+            return {"error": "Todos los campos son obligatorios"}, 400
+
         if clave != confirmar_clave:
             return {"error": "Las claves no coinciden"}, 400
 
