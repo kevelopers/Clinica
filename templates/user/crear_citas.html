@@ -42,73 +42,175 @@
       }
     </style>
   </head>
+  <body class="fondo-delineado">  
+    <iframe id="sidebarFrame" src="{{ url_for('menu') }}"></iframe>  
+    <div class="col-md-6 col-lg-6"  
+         style="  
+            background-color: #f5f3f4;  
+            color: #17283b;  
+            border-radius: 5px;  
+            padding: 15px; /* Reduce el padding si es necesario */  
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);  
+            margin: auto; /* Centra el contenedor */  
+         ">  
+        <h5 style="text-align: center"><b>CREAR CITAS</b></h5>  
+        <form id="formulario">  
+            <div class="mb-3">  
+                <label for="fecha" class="form-label"><b>FECHA</b></label>  
+                <input  
+                    type="datetime-local"  
+                    class="form-control"  
+                    id="fechaHora"  
+                    name="fechaHora"  
+                    min=""  
+                    max=""  
+                />  
+            </div>  
+            <div class="mb-3">  
+                <label for="motivo" class="form-label"><b>Motivo</b></label>  
+                <select class="form-select" id="motivo" name="motivo" multiple required></select>  
+            </div>  
+            <div class="mb-3">  
+                <label for="doctor" class="form-label"><b>Doctor</b></label>  
+                <select class="form-select" id="doctor" name="doctor">  
+                    <!-- Opciones dinámicas -->  
+                </select>  
+            </div>  
+            <div class="mb-3">  
+                <label for="paciente" class="form-label"><b>Paciente</b></label>  
+                <input  
+                    type="text"  
+                    class="form-control"  
+                    id="paciente"  
+                    name="paciente"  
+                />  
+            </div>  
+            <div style="text-align: center">  
+                <button type="button" class="btn btn-primary" id="submitButton">  
+                    Agendar Consulta  
+                </button>  
+            </div>  
+            <br />  
+        </form>  
+    </div>  
+</body>  
 
-  <body class="fondo-delineado">
-    <iframe id="sidebarFrame" src="{{ url_for('menu') }}"></iframe>
-    <div class="main-content">
-      <div class="container" style="margin-left: 50px">
-        <br /><br /><br />
-        <div class="row">
-          <div
-            class="col-md-10 col-lg-10"
-            style="
-              background-color: #f5f3f4;
-              color: #17283b;
-              border-radius: 5px;
-              padding: 20px;
-              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            "
-          >
-            <h5 style="text-align: center"><b>CREAR CITAS</b></h5>
-            <form id="formulario">
-              <div class="mb-3">
-                <label for="fecha" class="form-label"><b>FECHA</b></label>
-                <input
-                  type="datetime-local"
-                  class="form-control"
-                  id="fechaHora"
-                  name="fechaHora"
-                  min=""
-                  max=""
-                />
-              </div>
-              <div class="mb-3">
-                <label for="motivo" class="form-label"><b>Motivo</b></label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="motivo"
-                  name="motivo"
-                  placeholder="Escriba su motivo.."
-                />
-              </div>
-              <div class="mb-3">
-                <label for="doctor" class="form-label"><b>Doctor</b></label>
-                <select class="form-select" id="doctor" name="doctor">
-                  <!-- Opciones dinámicas -->
-                </select>
-              </div>
-              <div class="mb-3">
-                <label for="paciente" class="form-label"><b>Paciente</b></label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="paciente"
-                  name="paciente"
-                />
-              </div>
-              <div style="text-align: center">
-                <button type="button" class="btn btn-primary" id="submitButton">
-                  Agendar Consulta
-                </button>
-              </div>
-              <br />
-            </form>
-          </div>
-        </div>
-      </div>
-    </div>
     <script src="../bootstrap/js/bootstrap.min.js"></script>
+
+    
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+    
+    <script>
+        $(document).ready(function () {
+            const motivos = [
+                "Reacción alérgica",  
+                "Asma alérgica",  
+                "Rinitis alérgica",  
+                "Consulta preoperatoria",  
+                "Manejo del dolor crónico",  
+                "Evaluación para anestesia",  
+                "Dolor en el pecho",  
+                "Fatiga excesiva",  
+                "Control de hipertensión",  
+                "Dolor abdominal persistente",  
+                "Sospecha de apendicitis",  
+                "Necesidad de cirugía electiva",  
+                "Problemas en la piel (erupciones, eccemas)",  
+                "Acné severo",  
+                "Lunares sospechosos",  
+                "Problemas hormonales",  
+                "Diabetes",  
+                "Hipotirodismo o hipertiroidismo",  
+                "Dolores abdominales",  
+                "Problemas digestivos crónicos",  
+                "Sangrado gastrointestinal",  
+                "Evaluación geriátrica integral",  
+                "Manejo de múltiples condiciones crónicas",  
+                "Control de los medicamentos",  
+                "Control prenatal",  
+                "Problemas menstruales",  
+                "Evaluación de fertilidad",  
+                "Anemia",  
+                "Problemas de coagulación",  
+                "Monitoreo de enfermedades hematológicas",  
+                "Infecciones recurrentes",  
+                "Fiebre inexplicada",  
+                "Evaluación de enfermedades infecciosas",  
+                "Exámenes de rutina",  
+                "Manejo de enfermedades crónicas",  
+                "Vacunaciones",  
+                "Síntomas no diagnosticados",  
+                "Dolor de tórax",  
+                "Enfermedades crónicas",  
+                "Problemas renales",  
+                "Insuficiencia renal",  
+                "Control de enfermedades crónicas",  
+                "Dificultad para respirar",  
+                "Tos persistente",  
+                "Asma o EPOC",  
+                "Dolores de cabeza severos",  
+                "Dificultad para hablar o moverse",  
+                "Evaluación de trastornos neurológicos",  
+                "Problemas de visión",  
+                "Irritación ocular",  
+                "Enfermedades oculares crónicas",  
+                "Evaluación de masas o tumores",  
+                "Seguimiento post-tratamiento",  
+                "Síntomas relacionados con el cáncer",  
+                "Problemas auditivos",  
+                "Dolor de garganta persistente",  
+                "Sinusitis crónica",  
+                "Exámenes de salud infantil",  
+                "Vacunaciones",  
+                "Crecimiento y desarrollo",  
+                "Ansiedad o depresión",  
+                "Trastornos del sueño",  
+                "Crisis emocional",  
+                "Dolor articular",  
+                "Inflamación recurrente",  
+                "Sospecha de enfermedades autoinmunitarias",  
+                "Problemas urinarios",  
+                "Dolor testicular",  
+                "Evaluación de la próstata",  
+                "Interpretación de imágenes médicas",  
+                "Exámenes de diagnóstico por imagen",  
+                "Seguimiento de lesiones previas",  
+                "Lesiones agudas",  
+                "Dolor severo",  
+                "Crisis médicas urgentes",  
+                "Resultados de biopsias",  
+                "Evaluación de muestras de tejidos",  
+                "Diagnósticos Histopatológicos",  
+                "Rehabilitación postoperatoria",  
+                "Manejo de dolor crónico",  
+                "Evaluación de discapacidad",  
+                "Consultas sobre estilos de vida saludables",  
+                "Exámenes preventivos",  
+                "Consejería en salud pública",  
+                "Evaluación de salud ocupacional",  
+                "Diagnóstico de enfermedades laborales",  
+                "Rehabilitación profesional",  
+                "Evaluación de antecedentes familiares",  
+                "Pruebas genéticas",  
+                "Asesoramiento sobre enfermedades hereditarias"
+            ];
+    
+            const selectMotivo = $('#motivo');
+    
+            motivos.forEach(motivo => {
+                selectMotivo.append(new Option(motivo, motivo));
+            });
+    
+            selectMotivo.select2({
+                placeholder: "Seleccione un motivo",
+                allowClear: true,
+                multiple: true // Agrega la opción multiple: true
+            });
+        });
+    </script>
+    
     <script>
       const fechaHoraInput = document.getElementById("fechaHora");
       const ahora = new Date();
