@@ -503,7 +503,7 @@ pdf.text(`Fecha de Consulta: ${fechaConsulta}`, 12, 76); // Ajustar posición de
 
 // Nombre y cédula en la misma fila, abajo
 pdf.text(`Paciente: ${nombre}`, 15, 96); // Ajustar posición del texto
-pdf.text(`Cédula: ${cedula}`, 120, 96); // Ajustar posición del texto
+pdf.text(` ${cedula}`, 120, 96); // Ajustar posición del texto
 
 // Dirección y celular en la tercera fila
 pdf.text(`Dirección: ${direccion}`, 15, 116, { maxWidth: 90 }); // Ajustar posición del texto
