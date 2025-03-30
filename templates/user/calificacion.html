@@ -188,7 +188,7 @@
 
         const doctorId = document.getElementById('doctor').value;
         const rating = document.getElementById('rating-value').value;
-        const comentario = "comentario"; // Aquí puedes agregar un campo de comentario si lo deseas
+        const comentario = document.getElementById('comentario').value; // Aquí puedes agregar un campo de comentario si lo deseas
 
         if (!doctorId || !rating) {
             alert('Por favor, complete todos los campos antes de enviar.');
@@ -214,6 +214,13 @@
             }
 
             const result = await response.json();
+            // reestablecer el formulario
+            document.getElementById('formulario').reset();
+            // Limpiar estrellas
+            stars.forEach(star => {
+                star.classList.remove('selected');
+            });
+            // Mostrar mensaje de éxito
             console.log(result);
         } catch (error) {
             console.error('Error:', error);
