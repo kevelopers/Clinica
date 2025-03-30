@@ -25,7 +25,8 @@ def preguntar():
         data = request.get_json()
         pregunta_usuario = data["pregunta"]
         respuesta = model.generate_content(pregunta_usuario)
-        return {"respuesta": respuesta.text}, 200
+        recomendacion = "Recomendamos agendar una cita con un doctor de la clínica Clin Clin."
+        return {"respuesta": f"{respuesta.text} {recomendacion}"}, 200
     except KeyError as e:
         return {"error": f"Falta el campo requerido: {str(e)}"}, 400
     except Exception as e:
