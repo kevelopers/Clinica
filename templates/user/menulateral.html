@@ -190,7 +190,10 @@
                 <a href="{{ url_for('contacto.index') }}" target="_top" style="font-size: 20px;"><i class="fas fa-envelope"></i> <span style="font-size: 20px;">Contacto</span></a>  
          <div class="separator"></div>
                
-                <a href="{{ url_for('ia.index') }}" target="_top" style="font-size: 20px;"><i class="fa fa-google-plus"></i> <span style="font-size: 20px;">ConsultorIA</span></a>  
+                <a href="{{ url_for('ia.index') }}" target="_top" style="font-size: 20px;">
+                  <img src="{{ url_for('static', filename='img/iconogpt.png') }}" alt="gpt" style="width: 20px; vertical-align: middle; margin-right: 8px; filter: invert(100%);">
+                  <span style="font-size: 20px;">ConsultorIA</span>
+                </a>  
          <div class="separator"></div>
                         
          <a href="{{ url_for('calificacion.index') }}" target="_top" style="font-size: 20px;">
