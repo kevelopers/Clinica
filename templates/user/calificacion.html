@@ -123,6 +123,7 @@
                         <button type="submit" class="btn btn-primary" id="btn-enviar">Enviar</button>
                     </div>
                 </form>
+                <div id="alert-container" class="mt-3" style="display: none;"></div>
             </div>
         </div>
     </div>
@@ -188,7 +189,7 @@
 
         const doctorId = document.getElementById('doctor').value;
         const rating = document.getElementById('rating-value').value;
-        const comentario = document.getElementById('comentario').value; // Aquí puedes agregar un campo de comentario si lo deseas
+        const comentario = document.getElementById('comentario').value;
 
         if (!doctorId || !rating) {
             alert('Por favor, complete todos los campos antes de enviar.');
@@ -209,24 +210,29 @@
                 }),
             });
 
+            const alertContainer = document.getElementById('alert-container');
+            alertContainer.style.display = 'block';
+
             if (!response.ok) {
                 throw new Error('Error al guardar la valoración');
             }
 
             const result = await response.json();
-            // reestablecer el formulario
+            // Reset form and stars
             document.getElementById('formulario').reset();
-            // Limpiar estrellas
-            stars.forEach(star => {
-                star.classList.remove('selected');
-            });
-            // Mostrar mensaje de éxito
-            console.log(result);
+            stars.forEach(star => star.classList.remove('selected'));
+
+            // Show success message
+            alertContainer.innerHTML = '<div class="alert alert-success">Calificación enviada con éxito.</div>';
         } catch (error) {
             console.error('Error:', error);
-            alert('Hubo un error al enviar la valoración');
+
+            // Show error message
+            const alertContainer = document.getElementById('alert-container');
+            alertContainer.innerHTML = '<div class="alert alert-danger">Error al enviar calificación. Intente de nuevo.</div>';
         }
     });
+
     document.addEventListener('DOMContentLoaded', () => {
         obtenerDoctores();
     });
