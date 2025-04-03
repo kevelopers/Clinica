@@ -16,6 +16,10 @@
     <script>
       async function enviarPregunta() {
         const pregunta = document.getElementById("pregunta").value;
+        const boton = document.querySelector("button[onclick='enviarPregunta()']");
+        boton.innerText = "Esperando respuesta";
+        boton.disabled = true;
+
         const response = await fetch("{{ url_for('ia.preguntar')}}", {
           method: "POST",
           headers: {
@@ -23,9 +27,13 @@
           },
           body: JSON.stringify({ pregunta }),
         });
+
         const data = await response.json();
         document.getElementById("respuesta").innerText =
           data.respuesta || data.error;
+
+        boton.innerText = "Consultar";
+        boton.disabled = false;
       }
     </script>
     <title>Sugerencia IA</title>

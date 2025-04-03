@@ -199,15 +199,6 @@
               </div>
             </div>
 
-            <div style="text-align: center;"> 
-              <button
-                class="btn btn-success"
-                type="button"
-                id="hijos"
-                data-bs-toggle="modal"
-                data-bs-target="#modalId"
-                onclick="abrirmodal()">Registrar Hijos</button>
-            </div>
             <div class="mb-3">
               <label for="usuario" class="form-label"><b>Usuario</b></label>
               <input
@@ -271,98 +262,7 @@
       </div>
     </div>
 
-<!-- Modal -->
-<div
-  class="modal fade"
-  id="modalId"
-  tabindex="-1"
-  role="dialog"
-  aria-labelledby="modalTitleId"
-  aria-hidden="true"
->
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="modalTitleId">
-          Registrar Hijos
-        </h5>
-        <button
-          type="button"
-          class="btn-close"
-          data-bs-dismiss="modal"
-          aria-label="Close"
-        ></button>
-      </div>
-      <div class="modal-body">
-        <div id="hijosContainer">
-          <div class="row mb-3 hijo-row">
-            <div class="col-6">
-              <label for="nombre_hijo" class="form-label">Nombre Hijo</label>
-              <input
-                type="text"
-                class="form-control"
-                name="nombre_hijo[]"
-                placeholder="Nombre del hijo"
-              />
-            </div>
-            <div class="col-6">
-              <label for="fecha_nacimiento_hijo" class="form-label">Fecha de Nacimiento</label>
-              <input
-                type="date"
-                class="form-control"
-                name="fecha_nacimiento_hijo[]"
-              />
-            </div>
-          </div>
-        </div>
-        <button type="button" class="btn btn-success" id="btnAgregarHijo">
-          Agregar Hijo
-        </button>
-      </div>
-      <div class="modal-footer">
-        <button
-          type="button"
-          class="btn btn-secondary"
-          data-bs-dismiss="modal"
-        >
-          Cerrar
-        </button>
-        <button type="button" class="btn btn-primary">Guardar</button>
-      </div>
-    </div>
-  </div>
-</div>
 
-<script>
-  document.getElementById("btnAgregarHijo").addEventListener("click", function () {
-    const hijosContainer = document.getElementById("hijosContainer");
-
-    const newHijoRow = document.createElement("div");
-    newHijoRow.classList.add("row", "mb-3", "hijo-row");
-
-    newHijoRow.innerHTML = `
-      <div class="col-6">
-        <label for="nombre_hijo" class="form-label">Nombre Hijo</label>
-        <input
-          type="text"
-          class="form-control"
-          name="nombre_hijo[]"
-          placeholder="Nombre del hijo"
-        />
-      </div>
-      <div class="col-6">
-        <label for="fecha_nacimiento_hijo" class="form-label">Fecha de Nacimiento</label>
-        <input
-          type="date"
-          class="form-control"
-          name="fecha_nacimiento_hijo[]"
-        />
-      </div>
-    `;
-
-    hijosContainer.appendChild(newHijoRow);
-  });
-</script>
 
     <script>
       document.getElementById('btnRegistrar').addEventListener('click', function (event) {
