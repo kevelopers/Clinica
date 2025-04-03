@@ -123,7 +123,7 @@
                         <button type="submit" class="btn btn-primary" id="btn-enviar">Enviar</button>
                     </div>
                 </form>
-                <div id="alert-container" class="mt-3" style="display: none;"></div>
+<div id="alert-container" class="mt-3" style="display: none;"></div>
             </div>
         </div>
     </div>
@@ -220,13 +220,13 @@
             const result = await response.json();
             // Reset form and stars
             document.getElementById('formulario').reset();
-            stars.forEach(star => star.classList.remove('selected'));
-
+                        stars.forEach(star => star.classList.remove('selected'));
+            
             // Show success message
             alertContainer.innerHTML = '<div class="alert alert-success">Calificación enviada con éxito.</div>';
         } catch (error) {
             console.error('Error:', error);
-
+            
             // Show error message
             const alertContainer = document.getElementById('alert-container');
             alertContainer.innerHTML = '<div class="alert alert-danger">Error al enviar calificación. Intente de nuevo.</div>';

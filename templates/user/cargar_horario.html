@@ -220,6 +220,8 @@
         </div>
       </div>
 
+      <div id="alert-container" class="mt-3" style="display: none;"></div>
+
       <table id="table">
         <thead>
           <tr>
@@ -241,6 +243,7 @@
       const day = document.getElementById("dias").value;
       const h_entrada = document.getElementById("h_entrada").value;
       const h_salida = document.getElementById("h_salida").value;
+      const alertContainer = document.getElementById("alert-container");
 
       if (day && h_entrada && h_salida) {
         const table = document
@@ -251,9 +254,9 @@
         for (let i = 0; i < rows.length; i++) {
           const existingDay = rows[i].cells[0].innerText;
           if (existingDay === day) {
-            alert(
-              "Ya existe un horario reservado para este día. Solo se permite una reserva por día."
-            );
+            alertContainer.style.display = "block";
+            alertContainer.innerHTML =
+              '<div class="alert alert-warning">Ya existe  horario  para este día. Solo se permite una horario por día.</div>';
             return;
           }
         }
@@ -274,12 +277,8 @@
         };
         actionCell.appendChild(editButton);
 
-        //guardar horarios en el servidor
-        var id = localStorage.getItem("id");
-        console.log(id);
-        console.log(h_entrada);
-        console.log(h_salida);
         try {
+          const id = localStorage.getItem("id");
           const response = await fetch(
             `http://127.0.0.1:5000/horario/guardar`,
             {
@@ -294,18 +293,29 @@
                 doctor_id: id,
               }),
             }
-          ); // Replace with your actual API endpoint
+          );
+
+          alertContainer.style.display = "block";
+
           if (response.status == 201) {
+            alertContainer.innerHTML =
+              '<div class="alert alert-success">Horario reservado con éxito.</div>';
             const data = await response.json();
-            return data; // Asegúrate de que el formato sea correcto
+            return data;
           } else if (response.status == 400) {
-            alert("La hora de salida no puede ser menor a la de entrada");
-            // recargar la pagina
-            location.reload();
+            alertContainer.innerHTML =
+              '<div class="alert alert-danger">La hora de salida no puede ser menor a la de entrada.</div>';
+            setTimeout(() => {
+              location.reload();
+            }, 2000); // Delay of 2 seconds before reloading
           } else {
-            console.error("Error al cargar el historial");
+            alertContainer.innerHTML =
+              '<div class="alert alert-danger">Error al cargar el horario.</div>';
           }
         } catch (err) {
+          alertContainer.style.display = "block";
+          alertContainer.innerHTML =
+            '<div class="alert alert-danger">Error al conectar con el servidor.</div>';
           console.error("Error al conectar con el servidor:", err);
         }
 
@@ -313,7 +323,9 @@
         document.getElementById("h_entrada").value = "";
         document.getElementById("h_salida").value = "";
       } else {
-        alert("Por favor, selecciona un día y ambos horarios.");
+        alertContainer.style.display = "block";
+        alertContainer.innerHTML =
+          '<div class="alert alert-warning">Por favor, selecciona un día y ambos horarios.</div>';
       }
     }
 
@@ -330,21 +342,18 @@
       row.parentNode.removeChild(row);
     }
     async function cargarHorarios() {
+      const alertContainer = document.getElementById("alert-container");
       try {
-        var id = localStorage.getItem("id");
-        // Realiza el fetch al endpoint para obtener los horarios
-        const response = await fetch(`http://127.0.0.1:5000/horario/${id}`); // Cambia '/api/horarios' por tu endpoint real
+        const id = localStorage.getItem("id");
+        const response = await fetch(`http://127.0.0.1:5000/horario/${id}`);
+
         if (response.ok) {
           const data = await response.json();
-          console.log("Horarios:", data);
           const table = document
             .getElementById("table")
             .getElementsByTagName("tbody")[0];
-
-          // Limpiar el contenido existente en la tabla
           table.innerHTML = "";
 
-          // Iterar sobre los datos y llenar la tabla
           data.horarios.forEach((horario) => {
             const newRow = table.insertRow();
             const dayCell = newRow.insertCell(0);
@@ -364,14 +373,18 @@
             actionCell.appendChild(editButton);
           });
         } else {
-          console.error("Error al cargar los horarios");
+          alertContainer.style.display = "block";
+          alertContainer.innerHTML =
+            '<div class="alert alert-danger">Error al cargar los horarios.</div>';
         }
       } catch (err) {
+        alertContainer.style.display = "block";
+        alertContainer.innerHTML =
+          '<div class="alert alert-danger">Error al conectar con el servidor.</div>';
         console.error("Error al conectar con el servidor:", err);
       }
     }
 
-    // Llamar a la función cargarHorarios al cargar la página
     document.addEventListener("DOMContentLoaded", cargarHorarios);
   </script>
 </html>
