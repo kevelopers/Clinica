@@ -20,6 +20,10 @@
       color: green;
       display: block; /* Asegúrate de que esté visible */
     }
+    .input-error {
+      border: 2px solid red !important; /* Ensure the red border is applied */
+      border-radius: 4px; /* Optional: Add rounded corners */
+    }
   </style>
 
   <head>
@@ -45,6 +49,8 @@
       rel="stylesheet"
     />
     <title>Registro</title>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
   </head>
 
   <body class="fondo-delineado">
@@ -148,6 +154,7 @@
                 required
               />
             </div>
+
             <div
               style="color: red"
               id="mensajeError1"
@@ -190,6 +197,16 @@
                 />
                 <label class="form-check-label" for="pasaporte">P</label>
               </div>
+            </div>
+
+            <div style="text-align: center;"> 
+              <button
+                class="btn btn-success"
+                type="button"
+                id="hijos"
+                data-bs-toggle="modal"
+                data-bs-target="#modalId"
+                onclick="abrirmodal()">Registrar Hijos</button>
             </div>
             <div class="mb-3">
               <label for="usuario" class="form-label"><b>Usuario</b></label>
@@ -254,11 +271,155 @@
       </div>
     </div>
 
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="modalId"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="modalTitleId"
+  aria-hidden="true"
+>
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalTitleId">
+          Registrar Hijos
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <div id="hijosContainer">
+          <div class="row mb-3 hijo-row">
+            <div class="col-6">
+              <label for="nombre_hijo" class="form-label">Nombre Hijo</label>
+              <input
+                type="text"
+                class="form-control"
+                name="nombre_hijo[]"
+                placeholder="Nombre del hijo"
+              />
+            </div>
+            <div class="col-6">
+              <label for="fecha_nacimiento_hijo" class="form-label">Fecha de Nacimiento</label>
+              <input
+                type="date"
+                class="form-control"
+                name="fecha_nacimiento_hijo[]"
+              />
+            </div>
+          </div>
+        </div>
+        <button type="button" class="btn btn-success" id="btnAgregarHijo">
+          Agregar Hijo
+        </button>
+      </div>
+      <div class="modal-footer">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+        <button type="button" class="btn btn-primary">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.getElementById("btnAgregarHijo").addEventListener("click", function () {
+    const hijosContainer = document.getElementById("hijosContainer");
+
+    const newHijoRow = document.createElement("div");
+    newHijoRow.classList.add("row", "mb-3", "hijo-row");
+
+    newHijoRow.innerHTML = `
+      <div class="col-6">
+        <label for="nombre_hijo" class="form-label">Nombre Hijo</label>
+        <input
+          type="text"
+          class="form-control"
+          name="nombre_hijo[]"
+          placeholder="Nombre del hijo"
+        />
+      </div>
+      <div class="col-6">
+        <label for="fecha_nacimiento_hijo" class="form-label">Fecha de Nacimiento</label>
+        <input
+          type="date"
+          class="form-control"
+          name="fecha_nacimiento_hijo[]"
+        />
+      </div>
+    `;
+
+    hijosContainer.appendChild(newHijoRow);
+  });
+</script>
+
     <script>
+      document.getElementById('btnRegistrar').addEventListener('click', function (event) {
+        event.preventDefault(); // Prevent default form submission
+
+        const inputs = document.querySelectorAll('#formulario input, #formulario select');
+        let hasError = false;
+
+        inputs.forEach((input) => {
+            if (!input.value.trim()) { // Check if input is empty
+                input.classList.add('input-error'); // Add red border
+                hasError = true;
+            } else {
+                input.classList.remove('input-error'); // Remove red border
+            }
+        });
+
+        if (hasError) {
+            document.getElementById('mensajeError').textContent = 'Por favor, completa todos los campos obligatorios.';
+            return;
+        }
+
+        let clave = document.getElementById('clave').value; // Obtener el valor del campo clave
+        let confirmar_clave = document.getElementById('confirmar_clave').value; // Obtener el valor del campo confirmar_clave
+        let mensajeDiv = document.getElementById('mensajeError');
+
+        if (clave !== confirmar_clave) { // Usar !== para comparar valores
+            mensajeDiv.textContent = 'Las contraseñas no coinciden.';
+            location.reload(); // Recargar la página
+        } else {
+            mensajeDiv.textContent = ''; // Limpiar el mensaje de error si las contraseñas coinciden
+            // Aquí puedes agregar el código para enviar el formulario o realizar otras acciones
+        }
+      });
+
       document
         .getElementById("btnRegistrar")
         .addEventListener("click", async function (event) {
           event.preventDefault();
+
+          const inputs = document.querySelectorAll("#formulario input, #formulario select");
+          let hasError = false;
+
+          inputs.forEach((input) => {
+            if (!input.value.trim()) {
+              input.classList.add("input-error");
+              hasError = true;
+            } else {
+              input.classList.remove("input-error");
+            }
+          });
+
+          if (hasError) {
+            document.getElementById("mensajeError").textContent =
+              "Por favor, completa todos los campos obligatorios.";
+            return;
+          }
 
           const nombre = document.getElementById("nombre").value;
           const apellido = document.getElementById("apellido").value;
@@ -356,6 +517,11 @@
         mensajeRegistro.textContent = mensaje;
         mensajeRegistro.style.color = "green"; // Opcional: Cambia el color del texto
       }
+
+      abrirmodal = () => {
+        const modal = new bootstrap.Modal(document.getElementById("modalId"));
+        modal.show();
+      };  
     </script>
   </body>
 </html>

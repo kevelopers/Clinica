@@ -74,6 +74,17 @@
               box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             "
           >
+            <div class="row">
+              <div class="col-md">
+                <input
+                  type="text"
+                  id="searchInput"
+                  class="form-control"
+                  placeholder="Buscar..."
+                />
+              </div>
+            </div>
+            <br />
             <table class="table table-striped" border="1">
               <thead>
                 <tr>
@@ -84,6 +95,13 @@
               </thead>
               <tbody id="citasBody"></tbody>
             </table>
+            <div class="row">
+              <div class="col-md-12 text-center">
+                <nav>
+                  <ul class="pagination" id="pagination"></ul>
+                </nav>
+              </div>
+            </div>
 
             <!-- Modal -->
             <div
@@ -218,57 +236,90 @@
 
     <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>
     <script>
-      // Función para cargar las citas desde el endpoint
-      async function cargarCitas() {
+      const rowsPerPage = 5;
+      let currentPage = 1;
+      let filteredData = [];
+let data = { citas: [] }; // Initialize data to store fetched citas
+
+      function renderTable(data) {
+        const citasBody = document.getElementById("citasBody");
+        citasBody.innerHTML = ""; // Clear existing rows
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = start + rowsPerPage;
+        const paginatedData = data.slice(start, end);
+
+        paginatedData.forEach((cita) => {
+          const row = document.createElement("tr");
+
+          const fechaHoraCell = document.createElement("td");
+const fechaHora = new Date(cita.fecha); // Parse the date
+          const formattedFechaHora = `${fechaHora.toLocaleDateString()} ${fechaHora.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+          fechaHoraCell.textContent = formattedFechaHora; // Display date and time
+          row.appendChild(fechaHoraCell);
+
+          const pacienteCell = document.createElement("td");
+          const pacienteLink = document.createElement("a");
+          pacienteLink.href = "#";
+          pacienteLink.className = "open-modal";
+          pacienteLink.setAttribute("data-bs-toggle", "modal");
+          pacienteLink.setAttribute("data-bs-target", "#pacienteModal");
+          pacienteLink.setAttribute("data-nombre", cita.paciente_nombre);
+          pacienteLink.setAttribute("data-id", cita.patient_id);
+          pacienteLink.setAttribute("data-fecha", cita.fecha);
+          pacienteLink.setAttribute("data-historial", "Historial del paciente");
+          pacienteLink.textContent = cita.paciente_nombre;
+          pacienteCell.appendChild(pacienteLink);
+          row.appendChild(pacienteCell);
+
+          const motivoCell = document.createElement("td");
+          motivoCell.textContent = cita.motivo;
+          row.appendChild(motivoCell);
+
+          citasBody.appendChild(row);
+        });
+      }
+
+      function renderPagination(data) {
+        const pagination = document.getElementById("pagination");
+        pagination.innerHTML = "";
+        const totalPages = Math.ceil(data.length / rowsPerPage);
+
+        for (let i = 1; i <= totalPages; i++) {
+          const li = document.createElement("li");
+          li.className = `page-item ${i === currentPage ? "active" : ""}`;
+          li.innerHTML = `<a class="page-link" href="#">${i}</a>`;
+          li.addEventListener("click", (e) => {
+            e.preventDefault();
+            currentPage = i;
+            renderTable(filteredData);
+            renderPagination(filteredData);
+          });
+          pagination.appendChild(li);
+        }
+      }
+
+      document.getElementById("searchInput").addEventListener("input", (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        filteredData = data.citas.filter((cita) =>
+          Object.values(cita).some((value) =>
+            value.toString().toLowerCase().includes(searchTerm)
+          )
+        );
+        currentPage = 1;
+        renderTable(filteredData);
+        renderPagination(filteredData);
+      });
+
+            async function cargarCitas() {
         try {
-          // Obtener el ID del doctor desde el localStorage
-          const doctorId = localStorage.getItem("id");
+                    const doctorId = localStorage.getItem("id");
           const url = `{{ url_for('cita.list', id=0).rsplit('/', 1)[0] }}/${doctorId}`;
-          const response = await fetch(url); // Flask endpoint
+          const response = await fetch(url);
           if (response.ok) {
-            const data = await response.json();
-            const citasBody = document.getElementById("citasBody");
-
-            // Limpiar el contenido existente
-            //  citasBody.innerHTML = "";
-
-            // Agregar las filas dinámicamente
-            data.citas.forEach((cita) => {
-              const row = document.createElement("tr");
-
-              const fechaHoraCell = document.createElement("td");
-              fechaHoraCell.textContent = cita.fecha;
-              row.appendChild(fechaHoraCell);
-
-              const pacienteCell = document.createElement("td");
-              const pacienteLink = document.createElement("a");
-              pacienteLink.href = "#";
-              pacienteLink.className = "open-modal";
-              pacienteLink.setAttribute("data-bs-toggle", "modal");
-              pacienteLink.setAttribute("data-bs-target", "#pacienteModal");
-              pacienteLink.setAttribute("data-nombre", cita.paciente_nombre);
-              pacienteLink.setAttribute("data-id", cita.patient_id);
-              pacienteLink.setAttribute("data-fecha", cita.fecha);
-              pacienteLink.setAttribute(
-                "data-historial",
-                "Historial del paciente"
-              );
-              pacienteLink.textContent = cita.paciente_nombre;
-              pacienteCell.appendChild(pacienteLink);
-              row.appendChild(pacienteCell);
-              const hiddenInput = document.createElement("input");
-              hiddenInput.type = "hidden";
-              hiddenInput.id = `pacienteId_${cita.patient_id}`;
-              hiddenInput.value = cita.patient_id;
-              hiddenInput.style.display = "none"; // Ocultar el input
-              row.appendChild(hiddenInput);
-
-              const motivoCell = document.createElement("td");
-              motivoCell.textContent = cita.motivo;
-              row.appendChild(motivoCell);
-
-              citasBody.appendChild(row);
-            });
+            data = await response.json(); // Store fetched data in the global variable
+            filteredData = data.citas;
+            renderTable(filteredData);
+            renderPagination(filteredData);
           } else {
             console.error("Error al cargar las citas");
           }
@@ -276,6 +327,7 @@
           console.error("Error al conectar con el servidor:", err);
         }
       }
+
       document
         .getElementById("pacienteModal")
         .addEventListener("show.bs.modal", function () {
@@ -382,87 +434,115 @@
             console.log("Historial cargado:", data);
             // Aquí puedes procesar el historial recibido
             return data; // Asegúrate de que el formato sea correcto
-          } else {
-            console.error("Error al cargar el historial");
+           } else {
+             console.error("Error al cargar el historial");
           }
-        } catch (err) {
-          console.error("Error al conectar con el servidor:", err);
+} catch (err) {
+console.error("Error al conectar con el servidor:", err);
         }
       }
 
-      // Seleccionar elementos con la clase 'open-modal'
-      const { jsPDF } = window.jspdf;
-      // Exportar a PDF
-      document.getElementById("exportarPDF").addEventListener("click", () => {
-        const pdf = new jsPDF();
-        const nombreElement = document.getElementById("modalNombre");
-        const historialElement = document.getElementById("modalHistorial");
-        const celularElement = document.getElementById("modalCelular");
-        const direccionElement = document.getElementById("modalDireccion");
-        const fechaConsultaElement =
-          document.getElementById("modalFechaConsulta");
-        const cedulaElement = document.getElementById("modalCedula");
+// Seleccionar elementos con la clase 'open-modal'
+const { jsPDF } = window.jspdf;
+// Exportar a PDF
+document.getElementById("exportarPDF").addEventListener("click", async () => {
+const pdf = new jsPDF();
+const nombreElement = document.getElementById("modalNombre");
+const historialElement = document.getElementById("modalHistorial");
+const celularElement = document.getElementById("modalCelular");
+const direccionElement = document.getElementById("modalDireccion");
+const fechaConsultaElement = document.getElementById("modalFechaConsulta");
+const cedulaElement = document.getElementById("modalCedula");
 
-        const nombre = nombreElement ? nombreElement.textContent : "";
-        const historial = historialElement ? historialElement.innerText : "";
-        const celular = celularElement ? celularElement.textContent : "";
-        const direccion = direccionElement ? direccionElement.textContent : "";
-        const fechaConsulta = fechaConsultaElement
-          ? fechaConsultaElement.textContent
-          : "";
-        const cedula = cedulaElement ? cedulaElement.textContent : "";
+const nombre = nombreElement ? nombreElement.textContent.trim() : "";
+const historial = historialElement ? historialElement.innerText.trim() : "";
+const celular = celularElement ? celularElement.textContent.trim() : "No especificado";
+const direccion = direccionElement ? direccionElement.textContent.trim() : "No especificada";
+const fechaConsulta = fechaConsultaElement ? fechaConsultaElement.textContent.trim() : "";
+const cedula = cedulaElement ? cedulaElement.textContent.trim() : "";
 
-        // Configuración inicial
-        pdf.setFont("helvetica", "bold");
-        pdf.setFontSize(18);
-        pdf.text(`Reporte Médico de ${nombre}`, 105, 15, { align: "center" });
+// Cargar el logo y la firma
+        const logoUrl = "{{ url_for('static', filename='img/logoClin.png') }}";
+        const firmaUrl = "{{ url_for('static', filename='img/firma.png') }}";
 
-        // Dibujar recuadro para el nombre
-        pdf.setDrawColor(0);
-        pdf.setFillColor(240, 240, 240);
-        pdf.rect(10, 20, 190, 10, "F");
-        pdf.setFontSize(12);
-        // Fecha de consulta en la primera fila
-        pdf.text(`Fecha de Consulta: ${fechaConsulta}`, 12, 26);
+        const logoImage = await fetch(logoUrl)
+     .then((response) => response.blob())
+          .then((blob) => {
+          return new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.readAsDataURL(blob);
+            });
+          });
 
-        // Nombre y cédula en la misma fila, abajo
-        pdf.text(`Paciente: ${nombre}`, 15, 46);
-        pdf.text(`Cédula: ${cedula}`, 120, 46); // Ajusta la posición horizontal según sea necesario
+        const firmaImage = await fetch(firmaUrl)
+          .then((response) => response.blob())
+          .then((blob) => {
+            return new Promise((resolve) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.readAsDataURL(blob);
+            });
+          });
 
-        // Dirección y celular en la tercera fila
-        pdf.text(`Dirección: ${direccion}`, 15, 66);
-        pdf.text(`Celular: ${celular}`, 120, 66); // Ajusta la posición horizontal según sea necesario
+// Configuración inicial
+pdf.addImage(logoImage, "PNG", 50, 10, 110, 40); // Aumentar el tamaño del logo
+pdf.setFont("helvetica", "bold");
+pdf.setFontSize(18);
+pdf.text(`Reporte Médico de ${nombre}`, 105, 65, { align: "center" }); // Ajustar posición del título
 
-        // Dibujar recuadro para el historial
-        pdf.rect(10, 75, 190, pdf.internal.pageSize.height - 85, "S");
-        pdf.setFont("helvetica", "bold");
-        pdf.text("Historial Médico:", 15, 85);
+// Dibujar recuadro para el nombre
+pdf.setDrawColor(0);
+pdf.setFillColor(240, 240, 240);
+pdf.rect(10, 70, 190, 10, "F"); // Ajustar posición del recuadro
+pdf.setFontSize(12);
+// Fecha de consulta en la primera fila
+pdf.text(`Fecha de Consulta: ${fechaConsulta}`, 12, 76); // Ajustar posición del texto
 
-        // Formatear el historial
-        pdf.setFont("helvetica", "normal");
-        pdf.setFontSize(10);
-        const splitHistorial = pdf.splitTextToSize(historial, 180);
-        pdf.text(splitHistorial, 15, 95);
+// Nombre y cédula en la misma fila, abajo
+pdf.text(`Paciente: ${nombre}`, 15, 96); // Ajustar posición del texto
+pdf.text(` ${cedula}`, 120, 96); // Ajustar posición del texto
 
-        // Guardar el PDF
-        pdf.save(`Reporte_${nombre}.pdf`);
-      });
+// Dirección y celular en la tercera fila
+pdf.text(`Dirección: ${direccion}`, 15, 116, { maxWidth: 90 }); // Ajustar posición del texto
+pdf.text(`Celular: ${celular}`, 120, 116); // Ajustar posición del texto
 
-      document
-        .getElementById("submitButton")
-        .addEventListener("click", function () {
-          // Cerrar el modal actual
-          var pacienteModal = bootstrap.Modal.getInstance(
-            document.getElementById("pacienteModal")
+// Dibujar recuadro para el historial
+pdf.rect(10, 125, 190, pdf.internal.pageSize.height - 175, "S"); // Ajustar posición del recuadro
+pdf.setFont("helvetica", "bold");
+pdf.text("Historial Médico:", 15, 135); // Ajustar posición del texto
+
+// Formatear el historial
+pdf.setFont("helvetica", "normal");
+pdf.setFontSize(10);
+const splitHistorial = pdf.splitTextToSize(historial, 180);
+pdf.text(splitHistorial, 15, 145); // Ajustar posición del texto
+
+// Agregar la firma al final
+const pageHeight = pdf.internal.pageSize.height;
+pdf.setFont("helvetica", "bold");
+pdf.text("Firma:", 15, pageHeight - 40); // Colocar "Firma:" al lado izquierdo
+pdf.addImage(firmaImage, "PNG", 30, pageHeight - 55, 130, 50); // Colocar la firma al lado derecho y ajustada
+
+// Guardar el PDF
+pdf.save(`Reporte_${nombre}.pdf`);
+});
+
+document
+.getElementById("submitButton")
+.addEventListener("click", function () {
+// Cerrar el modal actual
+var pacienteModal = bootstrap.Modal.getInstance(
+document.getElementById("pacienteModal")
           );
-          pacienteModal.hide();
+pacienteModal.hide();
 
-          // Abrir el segundo modal
-          var historialModal = new bootstrap.Modal(
-            document.getElementById("historialModal")
+// Abrir el segundo modal
+var historialModal = new bootstrap.Modal(
+document.getElementById("historialModal")
           );
-          historialModal.show();
-        });
-    </script>
-  </body>
+historialModal.show();
+});
+</script>
+</body>
 </html>

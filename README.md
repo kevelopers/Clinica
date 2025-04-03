@@ -26,6 +26,9 @@ Este proyecto es una aplicación web desarrollada con Flask para el registro de 
    ```
    http://127.0.0.1:5000
    ```
+4. Corremos el comando para instalar las dependencias de ia (GEMINI)
+
+pip install google-generativeai flask
 
 ## Notas adicionales
 

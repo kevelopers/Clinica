@@ -26,10 +26,6 @@
         const data = await response.json();
         document.getElementById("respuesta").innerText =
           data.respuesta || data.error;
-        if (data.respuesta) {
-          document.getElementById("recomendacion").innerText =
-            "Recomendamos agendar una cita con un doctor de la clínica Clin Clin.";
-        }
       }
     </script>
     <title>Sugerencia IA</title>
@@ -102,7 +98,6 @@
           <br />
           <h2 style="text-align: center">Respuesta:</h2>
           <p id="respuesta" style="text-align: center"></p>
-          <!-- <p id="recomendacion" style="text-align: center; font-weight: bold; color: #0d6efd;"></p> -->
           <p>
             <a href="{{ url_for('paciente.index') }}"> <b>Volver</b></a>
           </p>

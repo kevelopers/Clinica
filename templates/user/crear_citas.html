@@ -92,6 +92,8 @@
             </div>  
             <br />  
         </form>  
+        <div id="mensajeExito" class="alert alert-success" style="display: none; text-align: center;"></div>
+        <div id="mensajeError" class="alert alert-danger" style="display: none; text-align: center;"></div>
     </div>  
 </body>  
 
@@ -326,16 +328,26 @@
               body: JSON.stringify(data),
             });
 
+            const mensajeExito = document.getElementById("mensajeExito");
+            const mensajeError = document.getElementById("mensajeError");
+
             if (response.ok) {
               const result = await response.json();
-              alert(result.message || "Cita creada exitosamente");
+              mensajeExito.textContent = result.message || "Cita creada exitosamente";
+              mensajeExito.style.display = "block";
+              mensajeError.style.display = "none";
             } else {
               const error = await response.json();
-              alert(error.error || "Error al crear la cita");
+              mensajeError.textContent = error.error || "Error al crear la cita";
+              mensajeError.style.display = "block";
+              mensajeExito.style.display = "none";
             }
           } catch (err) {
             console.error(err);
-            alert("Error al conectar con el servidor");
+            const mensajeError = document.getElementById("mensajeError");
+            mensajeError.textContent = "Error al conectar con el servidor";
+            mensajeError.style.display = "block";
+            mensajeExito.style.display = "none";
           }
         });
     </script>

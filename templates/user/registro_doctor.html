@@ -175,44 +175,74 @@
             const data = e.params.data;
             console.log("Desmarcado:", data);
         });
-    });
-    document.getElementById('formulario').addEventListener('submit', function (event) {
-        const fechaNacimiento = document.getElementById('nacimiento').value;
-        const fechaNacimientoDate = new Date(fechaNacimiento);
-        const fechaActual = new Date();
-        const fechaMinima = new Date(1900, 0, 1); // 1 de enero de 1900
-        const errorDiv = document.getElementById('nacimientoError');
 
-        errorDiv.textContent = ''; // Limpiar mensajes de error anteriores
+        document.getElementById('btnRegistrar').addEventListener('click', function (event) {
+            event.preventDefault(); // Prevent form submission
 
-        if (fechaNacimientoDate > fechaActual) {
-            errorDiv.textContent = 'La fecha de nacimiento no puede ser futura.';
-            event.preventDefault(); // Evitar que se envíe el formulario
-        } else if (fechaNacimientoDate < fechaMinima) {
-            errorDiv.textContent = 'La fecha de nacimiento debe ser posterior a 1900.';
-            event.preventDefault(); // Evitar que se envíe el formulario
-        }
-    });
+            let isValid = true; // Flag to track if all fields are valid
+            const inputs = document.querySelectorAll('#formulario input, #formulario select');
+            const errorDiv = document.getElementById('mensajeError');
+            errorDiv.textContent = ''; // Clear previous error messages
 
-    document.getElementById('btnRegistrar').addEventListener('click', function (event) {
-        let clave = document.getElementById('clave').value; // Obtener el valor del campo clave
-        let confirmar_clave = document.getElementById('confirmar_clave').value; // Obtener el valor del campo confirmar_clave
-        let mensajeDiv = document.getElementById('mensajeError');
+            inputs.forEach(input => {
+                if (!input.value.trim()) {
+                    input.style.borderColor = 'red'; // Highlight empty input in red
+                    isValid = false;
+                } else {
+                    input.style.borderColor = ''; // Reset border color if valid
+                }
+            });
 
-        if (clave !== confirmar_clave) { // Usar !== para comparar valores
-            mensajeDiv.textContent = 'Las contraseñas no coinciden.';
-            location.reload(); // Recargar la página
-        } else {
-            mensajeDiv.textContent = ''; // Limpiar el mensaje de error si las contraseñas coinciden
-            // Aquí puedes agregar el código para enviar el formulario o realizar otras acciones
-          //  console.log("Contraseñas coinciden");
-        }
-    });
+            if (!isValid) {
+                errorDiv.textContent = 'Por favor, complete todos los campos obligatorios.';
+                return; // Stop further execution if validation fails
+            }
 
+            // Proceed with other validations or form submission logic
+        });
 
-     // Enviar el formulario como JSON al endpoint /crear_cita
-     document.getElementById('btnRegistrar').addEventListener('click', async () => {
-        event.preventDefault(); // Evita que el formulario se envíe y recargue la página
+        document.getElementById('btnRegistrar').addEventListener('click', function (event) {
+            const nacimiento = document.getElementById('nacimiento').value;
+            const fechaNacimientoDate = new Date(nacimiento);
+            const fechaActual = new Date();
+            const fechaMinima = new Date(1900, 0, 1); // 1 de enero de 1900
+            const edadMinima = new Date(fechaActual.getFullYear() - 18, fechaActual.getMonth(), fechaActual.getDate()); // Fecha mínima para 18 años
+            const errorDiv = document.getElementById('nacimientoError');
+
+            errorDiv.textContent = ''; // Limpiar mensajes de error anteriores
+
+            if (fechaNacimientoDate > fechaActual) {
+                errorDiv.textContent = 'La fecha de nacimiento no puede ser futura.';
+                event.preventDefault(); // Bloquear el envío del formulario
+                return;
+            } else if (fechaNacimientoDate < fechaMinima) {
+                errorDiv.textContent = 'La fecha de nacimiento debe ser posterior a 1900.';
+                event.preventDefault(); // Bloquear el envío del formulario
+                return;
+            } else if (fechaNacimientoDate > edadMinima) {
+                errorDiv.textContent = 'Debe tener al menos 18 años.';
+                event.preventDefault(); // Bloquear el envío del formulario
+                return;
+            }
+        });
+
+        document.getElementById('btnRegistrar').addEventListener('click', function (event) {
+            let clave = document.getElementById('clave').value; // Obtener el valor del campo clave
+            let confirmar_clave = document.getElementById('confirmar_clave').value; // Obtener el valor del campo confirmar_clave
+            let mensajeDiv = document.getElementById('mensajeError');
+
+            if (clave !== confirmar_clave) { // Usar !== para comparar valores
+                mensajeDiv.textContent = 'Las contraseñas no coinciden.';
+                location.reload(); // Recargar la página
+            } else {
+                mensajeDiv.textContent = ''; // Limpiar el mensaje de error si las contraseñas coinciden
+                // Aquí puedes agregar el código para enviar el formulario o realizar otras acciones
+            }
+        });
+
+        // Enviar el formulario como JSON al endpoint /crear_cita
+        document.getElementById('btnRegistrar').addEventListener('click', async () => {
+            event.preventDefault(); // Evita que el formulario se envíe y recargue la página
 
             const selectEspecialidad = $('#especialidad');
             const nombre = document.getElementById('nombre').value;
@@ -250,7 +280,6 @@
                 console.log("Respuesta:", response);
                 if (response.status === 201) {
                     const result = await response.json();
-                    //alert(result.message || 'Registro Doctor');
                     mensajeRegistro.textContent = 'Registro Exitoso.';
                 } else {
                     const error = await response.json();
@@ -258,9 +287,9 @@
                 }
             } catch (err) {
                 console.error(err);
-                //alert('Error al conectar con el servidor');
             }
         });
+    });
 </script>
   <!-- Referencia a Bootstrap JS -->
   <script src="{{ url_for('static', filename='bootstrap/js/bootstrap.min.js') }}"></script>

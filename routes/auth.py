@@ -19,6 +19,11 @@ def paciente():
     return render_template("user/registro_paciente.html")
 
 
+@bp.route("/login", methods=["GET"])
+def login_get():
+    return render_template("user/login.html")
+
+
 @bp.route("/login", methods=["POST"])
 def login():
     try:

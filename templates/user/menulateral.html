@@ -198,7 +198,7 @@
 <span style="font-size: 20px;">Califica a tu Doctor</span>
 </a>  
          <div class="separator"></div>
-                <a href="{{url_for('index')}}" target="_top"><i class="fas fa-sign-out-alt" style="font-size: 20px;"></i> <span style="font-size: 20px;">Salir</span></a>  
+                <a href="{{ url_for('auth.login') }}" target="_top" id="logoutLink"><i class="fas fa-sign-out-alt" style="font-size: 20px;"></i> <span style="font-size: 20px;">Salir</span></a>  
             `;
     } else if (pacienteJSON == "doctor") {
       sidebarOptions += `  
@@ -206,8 +206,13 @@
          <div class="separator"></div>
                 <a href="{{ url_for('horario.index') }}" target="_top"><i class="fas fa-clock" style="font-size: 20px;"></i> <span style="font-size: 20px;">Horarios</span></a>  
         <div class="separator"></div>
-                <a href="{{url_for('index')}}" target="_top"><i class="fas fa-sign-out-alt" style="font-size: 20px;"></i> <span style="font-size: 20px;">Salir</span></a>  
+                <a href="{{ url_for('auth.login') }}" target="_top" id="logoutLink"><i class="fas fa-sign-out-alt" style="font-size: 20px;"></i> <span style="font-size: 20px;">Salir</span></a>  
             `;
+    }else{
+        sidebarOptions += ` 
+      <a href="{{ url_for('auth.login') }}" target="_top" id="logoutLink"><i class="fas fa-sign-out-alt" style="font-size: 20px;"></i> <span style="font-size: 20px;">Salir</span></a>  
+        
+        `;
     }
 
     sidebarContent.innerHTML = sidebarOptions;
@@ -216,6 +221,26 @@
       sidebar.classList.toggle("closed");
       content.classList.toggle("closed");
       toggleBtn.querySelector("img").classList.toggle("rotated");
+    });
+
+    const logoutLink = document.getElementById("logoutLink");
+
+    logoutLink.addEventListener("click", (event) => {
+      event.preventDefault(); // Prevent default link behavior
+      localStorage.clear(); // Clear local storage
+      sessionStorage.clear(); // Clear session storage if used
+
+      // Redirect the top-level window to the login page
+      window.top.location.href = "{{ url_for('auth.login') }}";
+    });
+
+// Prevent going back to the previous page after logout
+    window.addEventListener("pageshow", (event) => {
+      if (event.persisted) {
+        localStorage.clear();
+        sessionStorage.clear();
+window.top.location.href = "{{ url_for('auth.login') }}";
+      }
     });
   </script>
 </body>
