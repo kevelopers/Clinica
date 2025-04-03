@@ -300,6 +300,8 @@
             return data; // Asegúrate de que el formato sea correcto
           } else if (response.status == 400) {
             alert("La hora de salida no puede ser menor a la de entrada");
+            // recargar la pagina
+            location.reload();
           } else {
             console.error("Error al cargar el historial");
           }
