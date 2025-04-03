@@ -21,9 +21,21 @@ def guardar_horarios():
         hora_fin = data["hora_fin"]
         doctor_id = data["doctor_id"]
         print(dia)
+
+        # Validar que la hora de inicio sea menor que la hora de fin
+        # tomamos la hora de inicio y la hora de fin y las convertimos a datetime
+        hora_inicio = hora_inicio.split(":")
+        hora_fin = hora_fin.split(":")
+        hora_inicio = int(hora_inicio[0]) * 60 + int(hora_inicio[1])
+        hora_fin = int(hora_fin[0]) * 60 + int(hora_fin[1])
         print(hora_inicio)
         print(hora_fin)
+        # validamos que la hora de fin sea mayor que la hora de inicio
+        if hora_inicio >= hora_fin:
+            return {"error": "La hora de inicio debe ser menor que la hora de fin"}, 400
         # Validar que el doctor exista
+        hora_inicio = data["hora_inicio"]
+        hora_fin = data["hora_fin"]
         doctor = Doctor.find_by_id(doctor_id)
         if not doctor:
             return {"error": "El doctor no existe"}, 404
