@@ -29,6 +29,15 @@ def crear():
         if not doctor:
             return {"error": "El doctor no existe"}, 404
 
+        fecha_actual = datetime.now()
+        fecha_obj = datetime.strptime(fecha, "%Y-%m-%dT%H:%M")
+        print(f"Fecha actual: {fecha_actual}, Fecha de la cita: {fecha_obj}")
+        # Validar que la fecha no sea en el pasado o en un lapso mayor a 1 año
+        if fecha_obj < fecha_actual:
+            return {"error": "La fecha no puede ser en el pasado"}, 400
+        if fecha_obj > fecha_actual.replace(year=fecha_actual.year + 1):
+            return {"error": "La fecha no puede ser más de un año en el futuro"}, 400
+
         # Validar que el paciente exista
         patient = Paciente.find_by_id(patient_id)
         if not patient:
